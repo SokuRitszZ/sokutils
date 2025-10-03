@@ -6,6 +6,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
 
 import 'virtual:uno.css';
+import '@sokutils/shadcn-ui/css';
 
 // Create a new router instance
 const router = createRouter({ routeTree });
