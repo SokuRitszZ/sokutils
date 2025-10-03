@@ -1,0 +1,9 @@
+{
+  "extends": ["../../configs/tsconfig.json"],
+  "compilerOptions": {
+    "verbatimModuleSyntax": false,
+    "strictNullChecks": true,
+    "module": "esnext",
+    "moduleResolution": "bundler"
+  }
+}

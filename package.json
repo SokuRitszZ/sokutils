@@ -1,0 +1,25 @@
+{
+  "name": "@sokutils",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "@soku-conf/eslint-config": "^1.1.1",
+    "@tsconfig/node-ts": "^23.6.1",
+    "@tsconfig/node20": "^20.1.6",
+    "@types/node": "^24.6.2",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-import": "^2.32.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  }
+}

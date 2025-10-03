@@ -1,0 +1,30 @@
+{
+  "editor.tabSize": 2,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "editor.stickyTabStops": true,
+  
+  "editor.fontFamily": "CaskaydiaCove Nerd Font",
+  "editor.fontLigatures": true,
+  "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+
+  "terminal.integrated.gpuAcceleration": "on",
+  "terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font",
+  "terminal.integrated.fontLigatures.enabled": true,
+  
+  "vim.useSystemClipboard": true,
+  "vim.handleKeys": {
+    "<C-d>": true,
+    "<C-s>": false,
+    "<C-z>": false
+  },
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "before": ["S"],
+      "after": ["D", "i"]
+    }
+  ],
+  "git.blame.editorDecoration.enabled": true,
+  "git.enableSmartCommit": true
+}
