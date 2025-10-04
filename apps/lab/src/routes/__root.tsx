@@ -1,21 +1,21 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import { createRootRoute, Outlet, useNavigate } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { Button } from '@sokutils/shadcn-ui';
 
-const RootLayout = () => 
-  <>
-    LAYOUT
+const RootLayout = () => {
+
+  const nav = useNavigate();
+
+  return <>
     <div className="p-2 flex gap-2">
-      <Link to="/home" className="[&.active]:font-bold">
-        Home
-      </Link>{' '}
-      <Link to="/about" className="[&.active]:font-bold">
-        About
-      </Link>
+      <Button variant='link' onClick={() => nav({ to: '/home' })}>HOME</Button>
+      <Button variant='link' onClick={() => nav({ to: '/about' })}>ABOUT</Button>
     </div>
     <hr />
     <Outlet />
     <TanStackRouterDevtools />
   </>;
+};
 
 
 export const Route = createRootRoute({ component: RootLayout });
