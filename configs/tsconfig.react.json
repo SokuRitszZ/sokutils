@@ -1,5 +1,5 @@
 {
-  "extends": ["../../configs/tsconfig.json"],
+  "extends": ["@tsconfig/node-ts/tsconfig.json", "./tsconfig.node.json"],
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
@@ -10,5 +10,4 @@
     /* Bundler mode */
     "jsx": "react-jsx",
   },
-  "include": ["src"]
 }
