@@ -16,6 +16,12 @@ declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router
   }
+  interface StaticDataRouteOption {
+    icon?: string;
+    title: string;
+    isMain?: boolean;
+    priority: number;
+  }
 }
 
 // Render the app

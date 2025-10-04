@@ -1,15 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/home')({
+export const Route = createFileRoute('/pure/iife')({
   component: RouteComponent,
   staticData: {
-    title: 'Home',
-    icon: 'i-tabler:home',
-    isMain: true,
+    title: 'iife',
     priority: 1,
   },
 });
 
 function RouteComponent() {
-  return <div>Hello "/home"!</div>;
+  return <div>Hello "/pure/iife"!</div>;
 }
