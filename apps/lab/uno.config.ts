@@ -5,4 +5,7 @@ export default defineConfig({
     presetMini(),
     presetIcons(),
   ],
+  shortcuts: {
+    'tw-center': 'flex items-center justify-center',
+  },
 });
