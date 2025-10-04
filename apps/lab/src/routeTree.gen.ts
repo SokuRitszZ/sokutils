@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as PureIifeRouteImport } from './routes/pure/iife'
 
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
@@ -22,31 +23,40 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PureIifeRoute = PureIifeRouteImport.update({
+  id: '/pure/iife',
+  path: '/pure/iife',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
+  '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
+  '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
+  '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/about' | '/home'
+  fullPaths: '/about' | '/home' | '/pure/iife'
   fileRoutesByTo: FileRoutesByTo
-  to: '/about' | '/home'
-  id: '__root__' | '/about' | '/home'
+  to: '/about' | '/home' | '/pure/iife'
+  id: '__root__' | '/about' | '/home' | '/pure/iife'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   HomeRoute: typeof HomeRoute
+  PureIifeRoute: typeof PureIifeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pure/iife': {
+      id: '/pure/iife'
+      path: '/pure/iife'
+      fullPath: '/pure/iife'
+      preLoaderRoute: typeof PureIifeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   HomeRoute: HomeRoute,
+  PureIifeRoute: PureIifeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

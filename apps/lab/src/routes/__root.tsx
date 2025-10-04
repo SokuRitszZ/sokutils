@@ -1,21 +1,27 @@
-import { createRootRoute, Outlet, useNavigate } from '@tanstack/react-router';
+import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import { Button } from '@sokutils/shadcn-ui';
+import { SidebarProvider, SidebarTrigger } from '@sokutils/shadcn-ui';
+import { AppSidebar } from '../components/app-sidebar';
 
 const RootLayout = () => {
 
-  const nav = useNavigate();
-
-  return <>
-    <div className="p-2 flex gap-2">
-      <Button variant='link' onClick={() => nav({ to: '/home' })}>HOME</Button>
-      <Button variant='link' onClick={() => nav({ to: '/about' })}>ABOUT</Button>
-    </div>
-    <hr />
-    <Outlet />
-    <TanStackRouterDevtools />
-  </>;
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <main>
+        <SidebarTrigger />
+        <Outlet />
+      </main>
+      <TanStackRouterDevtools />
+    </SidebarProvider>
+  );
 };
 
 
-export const Route = createRootRoute({ component: RootLayout });
+export const Route = createRootRoute({ 
+  component: RootLayout,
+  staticData: {
+    title: '',
+    priority: 0,
+  },
+});
