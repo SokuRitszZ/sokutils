@@ -1,3 +1,6 @@
 {
-  "extends": ["@soku-conf"]
+  "extends": ["@soku-conf"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "off"
+  }
 }

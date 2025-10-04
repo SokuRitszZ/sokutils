@@ -5,6 +5,8 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
 
+import './styles/index.css';
+
 import 'virtual:uno.css';
 import '@sokutils/shadcn-ui/css';
 

@@ -2,6 +2,7 @@ import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, Sid
 import { useNavigate } from '@tanstack/react-router';
 import { PureRoutes } from './pure-routes';
 import { MainRoutes } from './main-routes';
+import { DemoRoutes } from './demos-routes';
 
 export const AppSidebar = () => {
   const nav = useNavigate();
@@ -23,6 +24,7 @@ export const AppSidebar = () => {
       </SidebarHeader>
       <SidebarContent>
         <MainRoutes />
+        <DemoRoutes />
         <PureRoutes />
       </SidebarContent>
       <SidebarFooter />

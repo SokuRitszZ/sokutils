@@ -4,8 +4,8 @@
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "types": ["vite/client"],
     "skipLibCheck": true,
+    "erasableSyntaxOnly": false,
 
     /* Bundler mode */
     "jsx": "react-jsx",

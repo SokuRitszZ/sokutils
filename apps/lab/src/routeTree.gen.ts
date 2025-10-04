@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as Demos_rootRouteImport } from './routes/demos/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as PureIifeRouteImport } from './routes/pure/iife'
+import { Route as DemosCounterRouteImport } from './routes/demos/counter'
 
+const Demos_rootRoute = Demos_rootRouteImport.update({
+  id: '/demos/__root',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -28,39 +34,65 @@ const PureIifeRoute = PureIifeRouteImport.update({
   path: '/pure/iife',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemosCounterRoute = DemosCounterRouteImport.update({
+  id: '/demos/counter',
+  path: '/demos/counter',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
+  '/demos': typeof Demos_rootRoute
+  '/demos/counter': typeof DemosCounterRoute
   '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
+  '/demos': typeof Demos_rootRoute
+  '/demos/counter': typeof DemosCounterRoute
   '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
+  '/demos/__root': typeof Demos_rootRoute
+  '/demos/counter': typeof DemosCounterRoute
   '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/about' | '/home' | '/pure/iife'
+  fullPaths: '/about' | '/home' | '/demos' | '/demos/counter' | '/pure/iife'
   fileRoutesByTo: FileRoutesByTo
-  to: '/about' | '/home' | '/pure/iife'
-  id: '__root__' | '/about' | '/home' | '/pure/iife'
+  to: '/about' | '/home' | '/demos' | '/demos/counter' | '/pure/iife'
+  id:
+    | '__root__'
+    | '/about'
+    | '/home'
+    | '/demos/__root'
+    | '/demos/counter'
+    | '/pure/iife'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   HomeRoute: typeof HomeRoute
+  Demos_rootRoute: typeof Demos_rootRoute
+  DemosCounterRoute: typeof DemosCounterRoute
   PureIifeRoute: typeof PureIifeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/demos/__root': {
+      id: '/demos/__root'
+      path: '/demos'
+      fullPath: '/demos'
+      preLoaderRoute: typeof Demos_rootRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
@@ -82,12 +114,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PureIifeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demos/counter': {
+      id: '/demos/counter'
+      path: '/demos/counter'
+      fullPath: '/demos/counter'
+      preLoaderRoute: typeof DemosCounterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   HomeRoute: HomeRoute,
+  Demos_rootRoute: Demos_rootRoute,
+  DemosCounterRoute: DemosCounterRoute,
   PureIifeRoute: PureIifeRoute,
 }
 export const routeTree = rootRouteImport
