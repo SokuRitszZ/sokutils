@@ -1,8 +1,13 @@
-import { Collapsible, CollapsibleContent, CollapsibleTrigger, SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@sokutils/shadcn-ui';
-import { useMatches, useNavigate, useRouter } from '@tanstack/react-router';
+import { Collapsible, SidebarGroup, CollapsibleTrigger, SidebarMenuButton, CollapsibleContent, SidebarMenu, SidebarMenuItem, SidebarGroupContent, SidebarGroupLabel } from '@sokutils/shadcn-ui';
+import { useRouter, useMatches, useNavigate } from '@tanstack/react-router';
 import { chain } from 'lodash';
 
-export const DemoRoutes = () => {
+interface Props {
+  prefix: string;
+  title: string;
+}
+
+export const GroupedRoutes = ({ title, prefix }: Props) => {
   const router = useRouter();
   const root = router.routeTree;
   const match = useMatches().at(-1);
@@ -10,19 +15,15 @@ export const DemoRoutes = () => {
 
   const pureRoutes = chain(root.children)
     .values()
-    .filter(r => r.fullPath.includes('/demos'))
+    .filter(r => r.fullPath.startsWith(prefix))
     .sortBy(r => r.options.staticData.priority)
     .value();
 
   return (
     <Collapsible defaultOpen className="group/collapsible">
       <SidebarGroup>
-        <CollapsibleTrigger>
-          <SidebarMenuButton>
-            Demos
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
-        <CollapsibleContent className='font-mono'>
+        <SidebarGroupLabel>{title}</SidebarGroupLabel>
+        <SidebarGroupContent>
           <SidebarMenu>
             {pureRoutes.map(r => 
               <SidebarMenuItem key={r.id}>
@@ -32,7 +33,7 @@ export const DemoRoutes = () => {
               </SidebarMenuItem>,
             )}
           </SidebarMenu>
-        </CollapsibleContent>
+        </SidebarGroupContent>
       </SidebarGroup>
     </Collapsible>
   );

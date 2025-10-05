@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Counter } from '../../components/counter';
 
-export const Route = createFileRoute('/demos/counter')({
+export const Route = createFileRoute('/apps/counter')({
   component: RouteComponent,
   staticData: {
     title: 'counter',

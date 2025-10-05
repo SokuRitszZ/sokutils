@@ -9,14 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as Demos_rootRouteImport } from './routes/demos/__root'
+import { Route as Apps_rootRouteImport } from './routes/apps/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as PureIifeRouteImport } from './routes/pure/iife'
-import { Route as DemosCounterRouteImport } from './routes/demos/counter'
+import { Route as AppsCounterRouteImport } from './routes/apps/counter'
 
-const Demos_rootRoute = Demos_rootRouteImport.update({
-  id: '/demos/__root',
+const Apps_rootRoute = Apps_rootRouteImport.update({
+  id: '/apps/__root',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -34,63 +34,63 @@ const PureIifeRoute = PureIifeRouteImport.update({
   path: '/pure/iife',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemosCounterRoute = DemosCounterRouteImport.update({
-  id: '/demos/counter',
-  path: '/demos/counter',
+const AppsCounterRoute = AppsCounterRouteImport.update({
+  id: '/apps/counter',
+  path: '/apps/counter',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
-  '/demos': typeof Demos_rootRoute
-  '/demos/counter': typeof DemosCounterRoute
+  '/apps': typeof Apps_rootRoute
+  '/apps/counter': typeof AppsCounterRoute
   '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
-  '/demos': typeof Demos_rootRoute
-  '/demos/counter': typeof DemosCounterRoute
+  '/apps': typeof Apps_rootRoute
+  '/apps/counter': typeof AppsCounterRoute
   '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
-  '/demos/__root': typeof Demos_rootRoute
-  '/demos/counter': typeof DemosCounterRoute
+  '/apps/__root': typeof Apps_rootRoute
+  '/apps/counter': typeof AppsCounterRoute
   '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/about' | '/home' | '/demos' | '/demos/counter' | '/pure/iife'
+  fullPaths: '/about' | '/home' | '/apps' | '/apps/counter' | '/pure/iife'
   fileRoutesByTo: FileRoutesByTo
-  to: '/about' | '/home' | '/demos' | '/demos/counter' | '/pure/iife'
+  to: '/about' | '/home' | '/apps' | '/apps/counter' | '/pure/iife'
   id:
     | '__root__'
     | '/about'
     | '/home'
-    | '/demos/__root'
-    | '/demos/counter'
+    | '/apps/__root'
+    | '/apps/counter'
     | '/pure/iife'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   HomeRoute: typeof HomeRoute
-  Demos_rootRoute: typeof Demos_rootRoute
-  DemosCounterRoute: typeof DemosCounterRoute
+  Apps_rootRoute: typeof Apps_rootRoute
+  AppsCounterRoute: typeof AppsCounterRoute
   PureIifeRoute: typeof PureIifeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/demos/__root': {
-      id: '/demos/__root'
-      path: '/demos'
-      fullPath: '/demos'
-      preLoaderRoute: typeof Demos_rootRouteImport
+    '/apps/__root': {
+      id: '/apps/__root'
+      path: '/apps'
+      fullPath: '/apps'
+      preLoaderRoute: typeof Apps_rootRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -114,11 +114,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PureIifeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demos/counter': {
-      id: '/demos/counter'
-      path: '/demos/counter'
-      fullPath: '/demos/counter'
-      preLoaderRoute: typeof DemosCounterRouteImport
+    '/apps/counter': {
+      id: '/apps/counter'
+      path: '/apps/counter'
+      fullPath: '/apps/counter'
+      preLoaderRoute: typeof AppsCounterRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -127,8 +127,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   HomeRoute: HomeRoute,
-  Demos_rootRoute: Demos_rootRoute,
-  DemosCounterRoute: DemosCounterRoute,
+  Apps_rootRoute: Apps_rootRoute,
+  AppsCounterRoute: AppsCounterRoute,
   PureIifeRoute: PureIifeRoute,
 }
 export const routeTree = rootRouteImport

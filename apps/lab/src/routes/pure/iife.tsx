@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import Basic from '../../demos/pure/iife/basic?demo';
 
 export const Route = createFileRoute('/pure/iife')({
   component: RouteComponent,
@@ -9,5 +10,9 @@ export const Route = createFileRoute('/pure/iife')({
 });
 
 function RouteComponent() {
-  return <div>Hello "/pure/iife"!</div>;
+  return (
+    <div>
+      <Basic />
+    </div>
+  );
 }
