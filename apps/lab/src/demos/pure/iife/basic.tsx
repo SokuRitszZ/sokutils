@@ -1,13 +1,12 @@
 import { iife } from '@sokutils/pure';
 
-export const PureIIFEDemo = () => {
-  const greeting = iife(() => {
-    return 'Hello World';
-  });
+iife(() => {
+  console.log('Hello World!');
+});
 
-  return (
-    <div>
-      {greeting}
-    </div>
-  );
-};
+const greeting = iife(() => {
+  // blabla ....
+  return 'Hello World!';
+});
+
+console.log(greeting);

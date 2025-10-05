@@ -31,11 +31,11 @@ export const DemoCard = ({ title, description, content, code }: Props) => {
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent>
+      <CardContent className='flex flex-col gap-2'>
         <UI.Content>
           {content}
         </UI.Content>
-        <UI.Code className='mt-2'>{code}</UI.Code>
+        <UI.Code>{code}</UI.Code>
       </CardContent>
     </Card>
   );

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import Basic from '../../demos/pure/iife?demo';
+import Basic from '../../demos/pure/iife/basic?demo';
 
 export const Route = createFileRoute('/pure/iife')({
   component: RouteComponent,
