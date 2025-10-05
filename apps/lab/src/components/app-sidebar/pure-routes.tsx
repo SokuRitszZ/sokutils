@@ -1,6 +1,6 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger, SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@sokutils/shadcn-ui';
 import { useMatches, useNavigate, useRouter } from '@tanstack/react-router';
-import { chain } from 'lodash-es';
+import { chain } from 'lodash';
 
 export const PureRoutes = () => {
   const router = useRouter();

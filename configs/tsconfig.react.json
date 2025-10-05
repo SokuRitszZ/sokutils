@@ -9,5 +9,6 @@
 
     /* Bundler mode */
     "jsx": "react-jsx",
+    "noEmit": true
   },
 }
