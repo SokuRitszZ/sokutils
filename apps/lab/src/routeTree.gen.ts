@@ -13,6 +13,7 @@ import { Route as Apps_rootRouteImport } from './routes/apps/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as PureIifeRouteImport } from './routes/pure/iife'
+import { Route as PureEitherRouteImport } from './routes/pure/either'
 import { Route as AppsCounterRouteImport } from './routes/apps/counter'
 
 const Apps_rootRoute = Apps_rootRouteImport.update({
@@ -34,6 +35,11 @@ const PureIifeRoute = PureIifeRouteImport.update({
   path: '/pure/iife',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PureEitherRoute = PureEitherRouteImport.update({
+  id: '/pure/either',
+  path: '/pure/either',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppsCounterRoute = AppsCounterRouteImport.update({
   id: '/apps/counter',
   path: '/apps/counter',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/apps': typeof Apps_rootRoute
   '/apps/counter': typeof AppsCounterRoute
+  '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRoutesByTo {
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/apps': typeof Apps_rootRoute
   '/apps/counter': typeof AppsCounterRoute
+  '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRoutesById {
@@ -60,19 +68,33 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/apps/__root': typeof Apps_rootRoute
   '/apps/counter': typeof AppsCounterRoute
+  '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/about' | '/home' | '/apps' | '/apps/counter' | '/pure/iife'
+  fullPaths:
+    | '/about'
+    | '/home'
+    | '/apps'
+    | '/apps/counter'
+    | '/pure/either'
+    | '/pure/iife'
   fileRoutesByTo: FileRoutesByTo
-  to: '/about' | '/home' | '/apps' | '/apps/counter' | '/pure/iife'
+  to:
+    | '/about'
+    | '/home'
+    | '/apps'
+    | '/apps/counter'
+    | '/pure/either'
+    | '/pure/iife'
   id:
     | '__root__'
     | '/about'
     | '/home'
     | '/apps/__root'
     | '/apps/counter'
+    | '/pure/either'
     | '/pure/iife'
   fileRoutesById: FileRoutesById
 }
@@ -81,6 +103,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   Apps_rootRoute: typeof Apps_rootRoute
   AppsCounterRoute: typeof AppsCounterRoute
+  PureEitherRoute: typeof PureEitherRoute
   PureIifeRoute: typeof PureIifeRoute
 }
 
@@ -114,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PureIifeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pure/either': {
+      id: '/pure/either'
+      path: '/pure/either'
+      fullPath: '/pure/either'
+      preLoaderRoute: typeof PureEitherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/apps/counter': {
       id: '/apps/counter'
       path: '/apps/counter'
@@ -129,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   Apps_rootRoute: Apps_rootRoute,
   AppsCounterRoute: AppsCounterRoute,
+  PureEitherRoute: PureEitherRoute,
   PureIifeRoute: PureIifeRoute,
 }
 export const routeTree = rootRouteImport
