@@ -4,6 +4,7 @@
     "paths": {
       "@sokutils/shadcn-ui": ["./node_modules/@sokutils/shadcn-ui/src"],
       "@sokutils/react": ["./node_modules/@sokutils/react/src"],
+      "demo-card": ["./src/components/demo-card"]
     }
   }
 }
