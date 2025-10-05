@@ -1,5 +1,5 @@
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, cn } from '@sokutils/shadcn-ui';
-import { chain, values } from 'lodash-es';
+import { chain, values } from 'lodash';
 import { useMatches, useNavigate, useRouter } from '@tanstack/react-router';
 
 export const MainRoutes = () => {
