@@ -17,7 +17,7 @@ export default defineConfig({
   },
   theme: {
     colors: {
-      ...toTheme(['primary', 'secondary', 'muted', 'border']),
+      ...toTheme(['primary', 'primary-foreground', 'secondary', 'muted', 'border']),
     },
   },
 });

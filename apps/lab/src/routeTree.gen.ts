@@ -13,6 +13,7 @@ import { Route as Apps_rootRouteImport } from './routes/apps/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ReactCtxRouteImport } from './routes/react/ctx'
+import { Route as ReactClxRouteImport } from './routes/react/clx'
 import { Route as PureIifeRouteImport } from './routes/pure/iife'
 import { Route as PureEitherRouteImport } from './routes/pure/either'
 import { Route as AppsCounterRouteImport } from './routes/apps/counter'
@@ -34,6 +35,11 @@ const AboutRoute = AboutRouteImport.update({
 const ReactCtxRoute = ReactCtxRouteImport.update({
   id: '/react/ctx',
   path: '/react/ctx',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReactClxRoute = ReactClxRouteImport.update({
+  id: '/react/clx',
+  path: '/react/clx',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PureIifeRoute = PureIifeRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/apps/counter': typeof AppsCounterRoute
   '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
+  '/react/clx': typeof ReactClxRoute
   '/react/ctx': typeof ReactCtxRoute
 }
 export interface FileRoutesByTo {
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/apps/counter': typeof AppsCounterRoute
   '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
+  '/react/clx': typeof ReactClxRoute
   '/react/ctx': typeof ReactCtxRoute
 }
 export interface FileRoutesById {
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/apps/counter': typeof AppsCounterRoute
   '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
+  '/react/clx': typeof ReactClxRoute
   '/react/ctx': typeof ReactCtxRoute
 }
 export interface FileRouteTypes {
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/apps/counter'
     | '/pure/either'
     | '/pure/iife'
+    | '/react/clx'
     | '/react/ctx'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/apps/counter'
     | '/pure/either'
     | '/pure/iife'
+    | '/react/clx'
     | '/react/ctx'
   id:
     | '__root__'
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/apps/counter'
     | '/pure/either'
     | '/pure/iife'
+    | '/react/clx'
     | '/react/ctx'
   fileRoutesById: FileRoutesById
 }
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   AppsCounterRoute: typeof AppsCounterRoute
   PureEitherRoute: typeof PureEitherRoute
   PureIifeRoute: typeof PureIifeRoute
+  ReactClxRoute: typeof ReactClxRoute
   ReactCtxRoute: typeof ReactCtxRoute
 }
 
@@ -150,6 +163,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReactCtxRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/react/clx': {
+      id: '/react/clx'
+      path: '/react/clx'
+      fullPath: '/react/clx'
+      preLoaderRoute: typeof ReactClxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pure/iife': {
       id: '/pure/iife'
       path: '/pure/iife'
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppsCounterRoute: AppsCounterRoute,
   PureEitherRoute: PureEitherRoute,
   PureIifeRoute: PureIifeRoute,
+  ReactClxRoute: ReactClxRoute,
   ReactCtxRoute: ReactCtxRoute,
 }
 export const routeTree = rootRouteImport
