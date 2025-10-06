@@ -35,12 +35,22 @@ describe('[cache.core]', () => {
     const cached = cache.core(rand)
       .strategy(strategy.lru(N));
 
+    const preTwo = cached(2);
     times(N, i => expect(cached(i)).toBe(cached(i)));
     
-    const pre = cached(0);
+    // the 0 has been queued to tail;
+    // [0, 1, 2] -> [1, 2, 0]
+    const preZero = cached(0);
+    // [1, 2, 0] -> [2, 0, N]
     cached(N);
-    const cur = cached(0);
+    // [2, 0, N] -> [2, N, 0]
+    const curZero = cached(0);
 
-    expect(pre).not.toBe(cur);
+    expect(preZero).toBe(curZero);
+    
+    // [2, N, 0] -> [N, 0, N+1]
+    cached(N + 1);
+    // [N, 0, N+1] -> [0, N+1, 2]
+    expect(preTwo).not.toBe(cached(2));
   });
 });
