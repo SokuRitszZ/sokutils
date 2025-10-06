@@ -2,6 +2,6 @@ import { GroupedRoutes } from './grouped-routes';
 
 export const PureRoutes = () => {
   return (
-    <GroupedRoutes prefix='/pure' title='Pure' />
+    <GroupedRoutes prefix='/pure' title='Pure' icon='i-tabler:tool' />
   );
 };

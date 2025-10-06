@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@iconify-json/tabler": "^1.2.23",
     "@sokutils/pure": "workspace:*",
     "@sokutils/react": "workspace:*",
