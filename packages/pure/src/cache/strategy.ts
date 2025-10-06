@@ -31,6 +31,10 @@ const lru = (cap: number): CacheStrategy => {
     if (!hit) {
       ctx.push(key);
     }
+    else {
+      ctx.splice(ctx.indexOf(key), 1);
+      ctx.push(key);
+    }
     if (ctx.length > cap) {
       ctx.shift();
     }
