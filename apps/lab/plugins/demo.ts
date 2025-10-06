@@ -1,10 +1,10 @@
 
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { path } from '@sokutils/pure';
 import { set } from 'lodash-es';
 
 import { Plugin } from 'vite';
-import { w } from '@sokutils/react';
 
 const consts = {
   path: resolve(__dirname, '../src/demos'),
@@ -19,7 +19,8 @@ export const tsxdemo = (): Plugin => {
     name: '@sokutils/vite-plugin-tsx-demo',
     enforce: 'pre',
     config: config => {
-      set(config, 'resolve.alias.@demos', consts.path);
+      const P = path.preset.dot.typing<typeof config>();
+      set(config, P.resolve.alias['@demos'].$, consts.path);
     },
     load: (id) => {
       if (id.endsWith(consts.query)) {

@@ -9,6 +9,8 @@ type Path<M extends Obj, P extends literal[], S extends string, E extends string
   [K in LiteralKeyOf<Required<M>>]: Path<Required<M>[K], [...P, K], S, E>;
 } & {
   [K in E]: Join<P, S>;
+} & {
+  [K in string]: Path<Required<M>[K], [...P, K], S, E>;
 }
 
 type ConfirmLiteralArr<A> = A extends literal[] ? A : never;
