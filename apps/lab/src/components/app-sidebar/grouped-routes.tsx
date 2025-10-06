@@ -1,3 +1,4 @@
+import { w } from '@sokutils/react';
 import { Collapsible, SidebarGroup, CollapsibleTrigger, SidebarMenuButton, CollapsibleContent, SidebarMenu, SidebarMenuItem, SidebarGroupContent, SidebarGroupLabel } from '@sokutils/shadcn-ui';
 import { useRouter, useMatches, useNavigate } from '@tanstack/react-router';
 import { chain } from 'lodash';
@@ -5,9 +6,12 @@ import { chain } from 'lodash';
 interface Props {
   prefix: string;
   title: string;
+  icon?: string;
 }
 
-export const GroupedRoutes = ({ title, prefix }: Props) => {
+const Icon = w('div', {}, 'size-1em mr-1');
+
+export const GroupedRoutes = ({ icon, title, prefix }: Props) => {
   const router = useRouter();
   const root = router.routeTree;
   const match = useMatches().at(-1);
@@ -18,16 +22,19 @@ export const GroupedRoutes = ({ title, prefix }: Props) => {
     .filter(r => r.fullPath.startsWith(prefix))
     .sortBy(r => r.options.staticData.priority)
     .value();
-
+  
   return (
     <Collapsible defaultOpen className="group/collapsible">
       <SidebarGroup>
-        <SidebarGroupLabel>{title}</SidebarGroupLabel>
+        <SidebarGroupLabel> 
+          {icon && <Icon className={icon} />}
+          {title}
+        </SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             {pureRoutes.map(r => 
               <SidebarMenuItem key={r.id}>
-                <SidebarMenuButton isActive={match?.id === r.id} onClick={() => nav({ to: r.fullPath })}>
+                <SidebarMenuButton className='font-mono' isActive={match?.id === r.id} onClick={() => nav({ to: r.fullPath })}>
                   {r.options.staticData.title}
                 </SidebarMenuButton>
               </SidebarMenuItem>,

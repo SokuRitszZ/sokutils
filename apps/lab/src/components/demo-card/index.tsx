@@ -11,7 +11,7 @@ interface Props {
 
 const UI = {
   Content: w('div', {}, 'border-1 border-border rounded-md p-3'),
-  Code: w('pre', {}, 'whitespace-pre-wrap', 'border-1 border-border rounded-md', 'p-6 overflow-auto', 'text-12px'),
+  Code: w('pre', {}, 'whitespace-pre-wrap', 'border-1 border-border rounded-md', 'p-6 overflow-auto', 'text-12px', 'max-h-320px'),
 };
 
 export const DemoCard = ({ title, description, content, code }: Props) => {
@@ -21,7 +21,7 @@ export const DemoCard = ({ title, description, content, code }: Props) => {
   };
 
   return (
-    <Card>
+    <Card className='h-fit'>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

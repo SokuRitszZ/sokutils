@@ -1,9 +1,9 @@
 
 import { createContext, FC, useContext, useMemo, useState } from 'react';
 import { assign, keys, upperFirst } from 'lodash-es';
-import { Anemic } from '../types';
+import { Anemic, SoftRequired } from '../types';
 
-export const createModelCtx = <M, >(initialModel: Required<M>) => {
+export const createModelCtx = <M, >(initialModel: SoftRequired<M>) => {
   const Context = createContext<Anemic<M>>({} as any);
 
   const hoc = <P, R extends FC<P>, S>(RFC: R, s?: S) => {

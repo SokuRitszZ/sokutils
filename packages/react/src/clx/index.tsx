@@ -1,5 +1,6 @@
-import { compact, isObject, isString, keys } from 'lodash-es';
-import { FC, forwardRef, HTMLAttributes, PropsWithChildren, useMemo } from 'react';
+import { compact, get, isObject, isString, keys } from 'lodash-es';
+import { FC, forwardRef, ForwardRefExoticComponent, HTMLAttributes, PropsWithChildren, RefAttributes, useMemo } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 type RM = Record<string, string>;
 type StateMap = Record<string, string | RM>;
@@ -10,8 +11,24 @@ type Resolved<M extends StateMap> = {
     : keyof M[K];
 }
 
+export const vars = <M extends Record<string, string>>(m: M, def?: keyof M): M => {
+  return {
+    ...m,
+    _def: def,
+  };
+};
 
-export const w = <T extends keyof HTMLElementTagNameMap, P, M extends StateMap>(tag: T | FC<P>, map: M, ...statics: string[]) => {
+type ResolvedProps<T extends keyof HTMLElementTagNameMap, P, M extends StateMap> = 
+  & HTMLAttributes<HTMLElementTagNameMap[T]>
+  & P
+  & Resolved<M>
+  & {
+    className?: string;
+  };
+
+export const w = 
+<T extends keyof HTMLElementTagNameMap, P, M extends StateMap>(tag: T | FC<P>, map: M, ...statics: string[]):
+  ForwardRefExoticComponent<RefAttributes<HTMLElementTagNameMap[T]> & ResolvedProps<T, P, M>> => {
   type RM = Resolved<M>;
   type El = HTMLElementTagNameMap[T];
   type FinalP = typeof tag extends T
@@ -31,17 +48,24 @@ export const w = <T extends keyof HTMLElementTagNameMap, P, M extends StateMap>(
     const booleanStr = keys(map)
       .filter((k) => isString(map[k]))
       .filter(k => prop[k])
+      .map(k => map[k])
       .join(' ');
     
     const enumStr = keys(map)
       .filter(k => isObject(map[k]))
-      .map(k => isString(prop[k]) ? map[k][prop[k]] : '')
+      .map(k => {
+        // actual key
+        const ak = prop[k] ?? get(map[k], '_def'); 
+        return isString(ak) ? map[k][ak] : '';
+      })
       .join(' ');
 
-    const cn = compact([staticStr, booleanStr, enumStr, className]).join(' ');
+    const cn = twMerge(staticStr, enumStr, booleanStr, className);
     
     return <As ref={ref} className={cn} {...prop} />;
   });
 
-  return comp;
+  return comp as any;
 };
+
+export const clx = { w, vars };
