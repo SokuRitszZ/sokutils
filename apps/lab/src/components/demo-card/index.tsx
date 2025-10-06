@@ -5,6 +5,7 @@ import { ReactNode } from 'react';
 interface Props {
   title: string;  
   description: string;
+  noContent?: boolean;
   content: ReactNode;
   code: string;
 }
@@ -14,14 +15,18 @@ const UI = {
   Code: w('pre', {}, 'whitespace-pre-wrap', 'border-1 border-border rounded-md', 'p-6 overflow-auto', 'text-12px', 'max-h-320px'),
 };
 
-export const DemoCard = ({ title, description, content, code }: Props) => {
+export const DemoCard = ({ title, description, noContent, content, code: _code }: Props) => {
+  const code = _code.replace(
+    /\n+export default \(\) => undefined;/,
+    '',
+  );
   const handleCopy = () => {
     navigator.clipboard.writeText(code)
       .then(() => toast('The demo code has been copied', { position: 'top-center' }));
   };
 
   return (
-    <Card className='h-fit'>
+    <Card className='h-fit w-full'>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -32,9 +37,7 @@ export const DemoCard = ({ title, description, content, code }: Props) => {
         </CardAction>
       </CardHeader>
       <CardContent className='flex flex-col gap-2'>
-        <UI.Content>
-          {content}
-        </UI.Content>
+        {!noContent && <UI.Content>{content}</UI.Content>}
         <UI.Code>{code}</UI.Code>
       </CardContent>
     </Card>

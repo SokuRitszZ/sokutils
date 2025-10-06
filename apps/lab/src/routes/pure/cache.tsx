@@ -1,13 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import Basic from '@demos/pure/either/basic';
+import Basic from '@demos/pure/cache/basic';
 import { L } from '../../components/layout';
 
-export const Route = createFileRoute('/pure/either')({
+export const Route = createFileRoute('/pure/cache')({
   component: RouteComponent,
   staticData: {
-    title: 'either',
-    priority: 2,
+    title: 'cache',
+    priority: 3,
   },
 });
 

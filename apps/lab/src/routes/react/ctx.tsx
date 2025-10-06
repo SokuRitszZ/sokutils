@@ -1,7 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
-import Props from '../../demos/react/ctx/props?demo';
-import Model from '../../demos/react/ctx/model?demo';
-import Hooks from '../../demos/react/ctx/hooks?demo';
+import Hooks from '@demos/react/ctx/hooks';
+import Model from '@demos/react/ctx/model';
+import Props from '@demos/react/ctx/props';
+import { L } from '../../components/layout';
 
 export const Route = createFileRoute('/react/ctx')({
   component: RouteComponent,
@@ -12,9 +13,11 @@ export const Route = createFileRoute('/react/ctx')({
 });
 
 function RouteComponent() {
-  return <div className='grid grid-cols-3 items-stretch gap-2'>
-    <Props />
-    <Model />
-    <Hooks />
-  </div>;
+  return (
+    <L.Demo>
+      <Props />
+      <Model />
+      <Hooks />
+    </L.Demo>
+  );
 }

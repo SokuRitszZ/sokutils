@@ -21,3 +21,5 @@ const promised = either(() => {
 promised.then(r => {
   console.log('[either]promised', r);
 });
+
+export default () => undefined;

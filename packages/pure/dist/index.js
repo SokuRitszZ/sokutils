@@ -1,7 +1,1 @@
-var i = n=>n();function t(n){
-  try{let e = n();return e instanceof Promise ? e.then(r=>[r, void 0]).catch(r=>[void 0, r]) : [e, void 0];}
-  catch(e){return [void 0, e];}
-}function d(n){
-  try{let e = n();return e instanceof Promise ? e.catch(()=>{}) : e;}
-  catch{return;}
-}export{ t as either, i as iife, d as unwrap };
+import {cloneDeep}from'lodash-es';import m from'object-hash';var g=t=>t();function l(t){try{let e=t();return e instanceof Promise?e.then(r=>[r,void 0]).catch(r=>[void 0,r]):[e,void 0]}catch(e){return [void 0,e]}}function b(t){try{let e=t();return e instanceof Promise?e.catch(()=>{}):e}catch{return}}var h={key:t=>m(t,{ignoreUnknown:false}),strategy:(t,e)=>({hit:true,ctx:e})},f=t=>{let e=cloneDeep(h),r={},n,o=(...i)=>{let s=e.key(i),u=e.strategy(s,n);if(n=u.ctx,u.hit&&s in r)return r[s];let a=t(...i);return r[s]=a,a},c=new Proxy(o,{get:(i,s)=>u=>(e[s]=u,c)});return c};var y=t=>(e,r)=>({hit:Date.now()>t,ctx:r}),T=t=>(e,r)=>{let n={...r},o=(n==null?void 0:n[e])||0,c=Date.now(),i=c-o<=t;return i||(n[e]=c),{hit:i,ctx:n}},x=t=>(e,r)=>{let n=r??[],o=n.includes(e);return o&&n.splice(n.indexOf(e),1),n.push(e),n.length>t&&n.shift(),{hit:o,ctx:n}},d={expired:y,duration:T,lru:x};var j={core:f,preset:{strategy:d}};export{j as cache,l as either,g as iife,b as unwrap};
