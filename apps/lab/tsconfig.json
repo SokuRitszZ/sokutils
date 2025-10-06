@@ -2,8 +2,10 @@
   "extends": ["../../configs/tsconfig.react.json"],
   "compilerOptions": {
     "paths": {
+      "@demos/*": ["./src/demos/*"],
       "@sokutils/shadcn-ui": ["./node_modules/@sokutils/shadcn-ui/src"],
       "@sokutils/react": ["./node_modules/@sokutils/react/src"],
+      "@sokutils/pure": ["./node_modules/@sokutils/pure/src"],
       "demo-card": ["./src/components/demo-card"],
     },
   }

@@ -1,5 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-import Basic from '../../demos/pure/iife/basic?demo';
+
+import Basic from '@demos/pure/iife/basic';
+import { L } from '../../components/layout';
 
 export const Route = createFileRoute('/pure/iife')({
   component: RouteComponent,
@@ -11,8 +13,8 @@ export const Route = createFileRoute('/pure/iife')({
 
 function RouteComponent() {
   return (
-    <div>
+    <L.Demo>
       <Basic />
-    </div>
+    </L.Demo>
   );
 }

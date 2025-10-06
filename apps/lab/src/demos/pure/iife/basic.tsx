@@ -10,3 +10,5 @@ const greeting = iife(() => {
 });
 
 console.log(greeting);
+
+export default () => undefined;
