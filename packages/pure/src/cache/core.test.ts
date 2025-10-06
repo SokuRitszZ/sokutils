@@ -13,6 +13,7 @@ describe('[cache.core]', () => {
   it('default', () => {
     const cached = cache.core(rand);
 
+    expect(cached(1)).not.toBeUndefined();
     expect(cached(1)).toBe(cached(1));
     expect(cached(2)).toBe(cached(2));
     expect(cached(1)).not.toBe(cached(2));
