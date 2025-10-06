@@ -5,16 +5,21 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@iconify-json/tabler": "^1.2.23",
+    "@sokutils/pure": "workspace:*",
+    "@sokutils/react": "workspace:*",
     "@sokutils/shadcn-ui": "workspace:*",
     "@tanstack/react-router": "^1.132.33",
     "@tanstack/react-router-devtools": "^1.132.33",
+    "@types/lodash": "^4.17.20",
     "@types/lodash-es": "^4.17.12",
+    "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
@@ -28,6 +33,8 @@
     "globals": "^16.4.0",
     "typescript": "~5.9.3",
     "unocss": "^66.5.2",
-    "vite": "^7.1.7"
+    "vite": "^7.1.7",
+    "vite-plugin-static-copy": "^3.1.3",
+    "vite-plugin-toml": "^0.8.5"
   }
 }

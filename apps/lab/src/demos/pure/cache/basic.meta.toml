@@ -1,0 +1,2 @@
+title = "Basic usage"
+description = "Use `cache.core` to memoize any function—default cache strategy same as `lodash.memoize`."

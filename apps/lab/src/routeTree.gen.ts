@@ -9,10 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as Apps_rootRouteImport } from './routes/apps/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ReactCtxRouteImport } from './routes/react/ctx'
+import { Route as ReactClxRouteImport } from './routes/react/clx'
 import { Route as PureIifeRouteImport } from './routes/pure/iife'
+import { Route as PureEitherRouteImport } from './routes/pure/either'
+import { Route as PureCacheRouteImport } from './routes/pure/cache'
+import { Route as AppsCounterRouteImport } from './routes/apps/counter'
 
+const Apps_rootRoute = Apps_rootRouteImport.update({
+  id: '/apps/__root',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -23,44 +33,128 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReactCtxRoute = ReactCtxRouteImport.update({
+  id: '/react/ctx',
+  path: '/react/ctx',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReactClxRoute = ReactClxRouteImport.update({
+  id: '/react/clx',
+  path: '/react/clx',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PureIifeRoute = PureIifeRouteImport.update({
   id: '/pure/iife',
   path: '/pure/iife',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PureEitherRoute = PureEitherRouteImport.update({
+  id: '/pure/either',
+  path: '/pure/either',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PureCacheRoute = PureCacheRouteImport.update({
+  id: '/pure/cache',
+  path: '/pure/cache',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppsCounterRoute = AppsCounterRouteImport.update({
+  id: '/apps/counter',
+  path: '/apps/counter',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
+  '/apps': typeof Apps_rootRoute
+  '/apps/counter': typeof AppsCounterRoute
+  '/pure/cache': typeof PureCacheRoute
+  '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
+  '/react/clx': typeof ReactClxRoute
+  '/react/ctx': typeof ReactCtxRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
+  '/apps': typeof Apps_rootRoute
+  '/apps/counter': typeof AppsCounterRoute
+  '/pure/cache': typeof PureCacheRoute
+  '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
+  '/react/clx': typeof ReactClxRoute
+  '/react/ctx': typeof ReactCtxRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/about': typeof AboutRoute
   '/home': typeof HomeRoute
+  '/apps/__root': typeof Apps_rootRoute
+  '/apps/counter': typeof AppsCounterRoute
+  '/pure/cache': typeof PureCacheRoute
+  '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
+  '/react/clx': typeof ReactClxRoute
+  '/react/ctx': typeof ReactCtxRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/about' | '/home' | '/pure/iife'
+  fullPaths:
+    | '/about'
+    | '/home'
+    | '/apps'
+    | '/apps/counter'
+    | '/pure/cache'
+    | '/pure/either'
+    | '/pure/iife'
+    | '/react/clx'
+    | '/react/ctx'
   fileRoutesByTo: FileRoutesByTo
-  to: '/about' | '/home' | '/pure/iife'
-  id: '__root__' | '/about' | '/home' | '/pure/iife'
+  to:
+    | '/about'
+    | '/home'
+    | '/apps'
+    | '/apps/counter'
+    | '/pure/cache'
+    | '/pure/either'
+    | '/pure/iife'
+    | '/react/clx'
+    | '/react/ctx'
+  id:
+    | '__root__'
+    | '/about'
+    | '/home'
+    | '/apps/__root'
+    | '/apps/counter'
+    | '/pure/cache'
+    | '/pure/either'
+    | '/pure/iife'
+    | '/react/clx'
+    | '/react/ctx'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   HomeRoute: typeof HomeRoute
+  Apps_rootRoute: typeof Apps_rootRoute
+  AppsCounterRoute: typeof AppsCounterRoute
+  PureCacheRoute: typeof PureCacheRoute
+  PureEitherRoute: typeof PureEitherRoute
   PureIifeRoute: typeof PureIifeRoute
+  ReactClxRoute: typeof ReactClxRoute
+  ReactCtxRoute: typeof ReactCtxRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/apps/__root': {
+      id: '/apps/__root'
+      path: '/apps'
+      fullPath: '/apps'
+      preLoaderRoute: typeof Apps_rootRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
@@ -75,11 +169,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/react/ctx': {
+      id: '/react/ctx'
+      path: '/react/ctx'
+      fullPath: '/react/ctx'
+      preLoaderRoute: typeof ReactCtxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/react/clx': {
+      id: '/react/clx'
+      path: '/react/clx'
+      fullPath: '/react/clx'
+      preLoaderRoute: typeof ReactClxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pure/iife': {
       id: '/pure/iife'
       path: '/pure/iife'
       fullPath: '/pure/iife'
       preLoaderRoute: typeof PureIifeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pure/either': {
+      id: '/pure/either'
+      path: '/pure/either'
+      fullPath: '/pure/either'
+      preLoaderRoute: typeof PureEitherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pure/cache': {
+      id: '/pure/cache'
+      path: '/pure/cache'
+      fullPath: '/pure/cache'
+      preLoaderRoute: typeof PureCacheRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apps/counter': {
+      id: '/apps/counter'
+      path: '/apps/counter'
+      fullPath: '/apps/counter'
+      preLoaderRoute: typeof AppsCounterRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +217,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   HomeRoute: HomeRoute,
+  Apps_rootRoute: Apps_rootRoute,
+  AppsCounterRoute: AppsCounterRoute,
+  PureCacheRoute: PureCacheRoute,
+  PureEitherRoute: PureEitherRoute,
   PureIifeRoute: PureIifeRoute,
+  ReactClxRoute: ReactClxRoute,
+  ReactCtxRoute: ReactCtxRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
