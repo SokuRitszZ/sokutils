@@ -39,10 +39,60 @@ export const createPathHelper = <S extends string, E extends string>(s: S, e: E)
   }
 };
 
+type PathSdk<E extends string> = ({
+  [K in E]: (...param: any[]) => any;
+} | {}) & ({
+  [K in string]: PathSdk<E> | ((...param: any[]) => any)
+} | {}) | {};
+
+export type PathSdkMap<E extends string, T extends PathSdk<E>> = T;
+
+type M = PathSdkMap<'req', {
+  req: () => number;
+  album: {
+    get: {
+      req: (foo: string, bar: number) => string;
+    };
+    post: {
+      req: (id: string) => {};
+    }
+  }
+}>;
+
+interface DefineOption {
+  prefix: literal[];
+}
+
+export const createPathSdk = <E extends string>(e: E) => {
+  return {
+    define: <M extends PathSdk<E>>(fn: (opt: DefineOption) => (...params: any[]) => any, prefix: literal[] = []) => {
+      const proxy = new Proxy({}, {
+        get: (_, key) => {
+          if (key === e) {
+            return fn({ prefix });
+          }
+          return createPathSdk(e).define(fn, [...prefix, key as literal]);
+        }
+      }) 
+
+      return proxy as M;
+    }
+  } 
+}
+
 export const path = {
-  core: createPathHelper,
-  preset: {
-    dot: createPathHelper('.', '$'),
-    snake: createPathHelper('_', 'z'),
+  str: {
+    core: createPathHelper,
+    preset: {
+      dot: createPathHelper('.', '$'),
+      snake: createPathHelper('_', 'z'),
+      slash: createPathHelper('/', 'p'),
+    }
+  },
+  sdk: {
+    core: createPathSdk,
+    preset: {
+      
+    }
   }
 }
