@@ -9,5 +9,6 @@ export * from './card';
 export * from './sonner';
 export * from './switch';
 export * from './tabs';
+export * from './dialog';
 
 export { toast } from 'sonner';

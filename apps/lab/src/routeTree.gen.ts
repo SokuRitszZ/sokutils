@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as Apps_rootRouteImport } from './routes/apps/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ReactPromisifyRouteImport } from './routes/react/promisify'
 import { Route as ReactCtxRouteImport } from './routes/react/ctx'
 import { Route as ReactClxRouteImport } from './routes/react/clx'
 import { Route as PureIifeRouteImport } from './routes/pure/iife'
@@ -31,6 +32,11 @@ const HomeRoute = HomeRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReactPromisifyRoute = ReactPromisifyRouteImport.update({
+  id: '/react/promisify',
+  path: '/react/promisify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReactCtxRoute = ReactCtxRouteImport.update({
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/pure/iife': typeof PureIifeRoute
   '/react/clx': typeof ReactClxRoute
   '/react/ctx': typeof ReactCtxRoute
+  '/react/promisify': typeof ReactPromisifyRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/pure/iife': typeof PureIifeRoute
   '/react/clx': typeof ReactClxRoute
   '/react/ctx': typeof ReactCtxRoute
+  '/react/promisify': typeof ReactPromisifyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/pure/iife': typeof PureIifeRoute
   '/react/clx': typeof ReactClxRoute
   '/react/ctx': typeof ReactCtxRoute
+  '/react/promisify': typeof ReactPromisifyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/pure/iife'
     | '/react/clx'
     | '/react/ctx'
+    | '/react/promisify'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/pure/iife'
     | '/react/clx'
     | '/react/ctx'
+    | '/react/promisify'
   id:
     | '__root__'
     | '/about'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/pure/iife'
     | '/react/clx'
     | '/react/ctx'
+    | '/react/promisify'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   PureIifeRoute: typeof PureIifeRoute
   ReactClxRoute: typeof ReactClxRoute
   ReactCtxRoute: typeof ReactCtxRoute
+  ReactPromisifyRoute: typeof ReactPromisifyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -167,6 +180,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/react/promisify': {
+      id: '/react/promisify'
+      path: '/react/promisify'
+      fullPath: '/react/promisify'
+      preLoaderRoute: typeof ReactPromisifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/react/ctx': {
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   PureIifeRoute: PureIifeRoute,
   ReactClxRoute: ReactClxRoute,
   ReactCtxRoute: ReactCtxRoute,
+  ReactPromisifyRoute: ReactPromisifyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
