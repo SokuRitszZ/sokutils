@@ -19,7 +19,7 @@ export const tsxdemo = (): Plugin => {
     name: '@sokutils/vite-plugin-tsx-demo',
     enforce: 'pre',
     config: config => {
-      const P = path.preset.dot.typing<typeof config>();
+      const P = path.str.preset.dot.typing<typeof config>();
       set(config, P.resolve.alias['@demos'].$, consts.path);
     },
     load: (id) => {
