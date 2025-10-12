@@ -31,12 +31,12 @@ export const createPathHelper = <S extends string, E extends string>(s: S, e: E)
             return prefix.join(s);
           }
           return createPathHelper(s, e).typing([...prefix, key as literal]);
-        }
-      })
+        },
+      });
 
       return proxy as Path<M, [], S, E>;
-    }
-  }
+    },
+  };
 };
 
 type PathSdk<E extends string> = ({
@@ -46,18 +46,6 @@ type PathSdk<E extends string> = ({
 } | {}) | {};
 
 export type PathSdkMap<E extends string, T extends PathSdk<E>> = T;
-
-type M = PathSdkMap<'req', {
-  req: () => number;
-  album: {
-    get: {
-      req: (foo: string, bar: number) => string;
-    };
-    post: {
-      req: (id: string) => {};
-    }
-  }
-}>;
 
 interface DefineOption {
   prefix: literal[];
@@ -72,13 +60,13 @@ export const createPathSdk = <E extends string>(e: E) => {
             return fn({ prefix });
           }
           return createPathSdk(e).define(fn, [...prefix, key as literal]);
-        }
-      }) 
+        },
+      }); 
 
       return proxy as M;
-    }
-  } 
-}
+    },
+  }; 
+};
 
 export const path = {
   str: {
@@ -87,12 +75,12 @@ export const path = {
       dot: createPathHelper('.', '$'),
       snake: createPathHelper('_', 'z'),
       slash: createPathHelper('/', 'p'),
-    }
+    },
   },
   sdk: {
     core: createPathSdk,
     preset: {
       
-    }
-  }
-}
+    },
+  },
+};
