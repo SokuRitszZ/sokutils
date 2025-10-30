@@ -1,8 +1,7 @@
+import { Fn } from '../types';
 
-export type FnType = (...args: any[]) => any;
-
-export interface CacheSettings<Fn extends FnType> {
-  key: (params: Parameters<Fn>) => string;
+export interface CacheSettings<F extends Fn> {
+  key: (params: Parameters<F>) => string;
   strategy: CacheStrategy;
 }
 
@@ -17,8 +16,8 @@ export interface CacheStrategyResult {
   ctx: any;
 }
 
-export type FnSettings<Fn extends FnType> = {
-  [K in keyof CacheSettings<Fn>]: (setting: CacheSettings<Fn>[K]) => CachedFn<Fn>;
+export type FnSettings<F extends Fn> = {
+  [K in keyof CacheSettings<F>]: (setting: CacheSettings<F>[K]) => CachedFn<F>;
 };
 
-export type CachedFn<Fn extends FnType> = Fn & FnSettings<Fn>;
+export type CachedFn<F extends Fn> = F & FnSettings<F>;
