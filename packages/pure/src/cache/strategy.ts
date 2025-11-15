@@ -1,5 +1,13 @@
 import { CacheStrategy } from './types';
 
+const once = (): CacheStrategy => {
+  return (key, ctx: Record<string, boolean>) => {
+    const hit = ctx[key];
+    ctx[key] = true; 
+    return { hit, ctx };
+  };
+};
+
 const expired = (time: number): CacheStrategy => {
   return (_, ctx: any) => {
     const hit = Date.now() > time;
@@ -43,7 +51,10 @@ const lru = (cap: number): CacheStrategy => {
   };
 };
 
+
+
 export const strategy = {
+  once,
   expired,
   duration,
   lru,
