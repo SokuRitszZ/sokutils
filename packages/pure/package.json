@@ -9,6 +9,7 @@
     ".": "./dist/index.js"
   },
   "scripts": {
+    "prepublish": "tsx ../../scripts/prepublish.ts",
     "build": "tsup",
     "test": "vitest"
   },
