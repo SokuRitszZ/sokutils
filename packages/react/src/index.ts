@@ -1,3 +1,3 @@
 export * from './ctx';
-export * from './clx';
+export * from './div';
 export * from './promisify';
