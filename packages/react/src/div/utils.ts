@@ -33,10 +33,10 @@ export const mergeClassName = ({
         return !!props[key] && theConfig;
       }
       if (typeof theConfig === 'object') {
-        const resolvedTheConfig = { ...config };
-        const choice = props[key];
+        const resolvedTheConfig = { ...theConfig };
+        const choice = props[key] || resolvedTheConfig.__default;
         if (typeof choice === 'string') {
-          return resolvedTheConfig;
+          return resolvedTheConfig[choice];
         }
       }
     });
@@ -44,4 +44,11 @@ export const mergeClassName = ({
   const result = twMerge(restClassNames, propClassName, effectiveConfigClassName);
 
   return result;
+};
+
+export const divVariants = <T extends Obj>(obj: T, __default: keyof T): T => {
+  return {
+    __default,
+    ...obj,
+  };
 };

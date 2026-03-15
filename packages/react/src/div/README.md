@@ -24,13 +24,16 @@ Configuration object type supporting three configuration methods:
 
 ```typescript
 type StandardDivConfig = {
-  [K in string]: [string, string] | Record<string, string> | string;
+  [K in string]: [string, string] | StandardDivConigVariant | string;
 }
+
+type StandardDivConigVariant = Record<string, string> & { __default?: string }
 ```
 
 1. **Array Form**: `[falseValue, trueValue]` - Select based on prop boolean value
 2. **Object Form**: `{ key: className }` - Select based on prop string value
 3. **String Form**: `className` - Apply when prop is truthy
+4. **Default Value**: Object configurations can include an optional `__default` key that specifies which variant to use as the default when the prop value doesn't match any key
 
 ## API
 
@@ -103,6 +106,37 @@ mergeClassName({
 1. `propClassName` - className prop passed directly
 2. `config` - className resolved from config based on props
 3. `restClassNames` - Default className
+
+### divVariants
+
+Helper function for creating variant configuration objects with a default value.
+
+```typescript
+divVariants<T extends Obj>(obj: T, __default: keyof T): T
+```
+
+**Parameters:**
+- `obj`: Variant object containing key-value pairs
+- `__default`: Key to use as default variant
+
+**Returns:** Variant object with `__default` property added
+
+**Example:**
+
+```typescript
+const variants = divVariants({
+  primary: 'bg-blue-500 text-white',
+  secondary: 'bg-gray-200 text-gray-800',
+  danger: 'bg-red-500 text-white',
+}, 'primary');
+
+// Result: {
+//   primary: 'bg-blue-500 text-white',
+//   secondary: 'bg-gray-200 text-gray-800',
+//   danger: 'bg-red-500 text-white',
+//   __default: 'primary'
+// }
+```
 
 ## Usage Examples
 
@@ -210,6 +244,61 @@ const ComplexButton = divx({
 <ComplexButton variant="success" size="lg" outline>Success Outline</ComplexButton>
 ```
 
+### Using __default for Fallback Values
+
+The `__default` key in object configurations specifies which variant to use as the default when the prop value doesn't match any defined key:
+
+```typescript
+const Button = divx({
+  variant: {
+    primary: 'bg-blue-500 text-white',
+    secondary: 'bg-gray-200 text-gray-800',
+    danger: 'bg-red-500 text-white',
+    __default: 'primary', // Use 'primary' variant as default
+  },
+  size: {
+    sm: 'text-sm px-2 py-1',
+    md: 'text-base px-4 py-2',
+    lg: 'text-lg px-6 py-3',
+    __default: 'md', // Use 'md' size as default
+  },
+}, 'rounded transition-colors');
+
+// Usage
+<Button variant="primary" size="md">Primary Medium</Button>
+<Button variant="secondary" size="lg">Secondary Large</Button>
+<Button variant="danger" size="sm">Danger Small</Button>
+<Button variant="warning" size="md">Warning (uses __default 'primary')</Button>
+<Button variant="primary" size="xl">Primary XL (uses __default 'md')</Button>
+```
+
+### Using divVariants Helper Function
+
+The `divVariants` helper function provides a cleaner way to create variant configurations with default values:
+
+```typescript
+import { divx, divVariants } from '@sokutils/react';
+
+const Button = divx({
+  variant: divVariants({
+    primary: 'bg-blue-500 text-white',
+    secondary: 'bg-gray-200 text-gray-800',
+    danger: 'bg-red-500 text-white',
+  }, 'primary'),
+  size: divVariants({
+    sm: 'text-sm px-2 py-1',
+    md: 'text-base px-4 py-2',
+    lg: 'text-lg px-6 py-3',
+  }, 'md'),
+}, 'rounded transition-colors');
+
+// Usage - same as above
+<Button variant="primary" size="md">Primary Medium</Button>
+<Button variant="warning" size="md">Warning (uses __default 'primary')</Button>
+```
+
+This approach provides better type safety and cleaner syntax when working with variant configurations.
+
 ## Type Definitions
 
 ### HTMLTag
@@ -224,22 +313,30 @@ Union type of all HTML tag names.
 
 ```typescript
 type StandardDivConfig = {
-  [K in string]: [string, string] | Record<string, string> | string;
+  [K in string]: [string, string] | StandardDivConigVariant | string;
 }
 ```
 
 Type definition for configuration objects.
+
+### StandardDivConigVariant
+
+```typescript
+type StandardDivConigVariant = Record<string, string> & { __default?: string }
+```
+
+Extended object type for variant configurations. The `__default` key specifies which variant to use as the default when the prop value doesn't match any defined key. It should be one of the existing keys in the object.
 
 ### ConvertConfigToProps
 
 ```typescript
 type ConvertConfigToProps<C extends StandardDivConfig> = {
   [K in keyof C]?: C[K] extends Record<string, string>
-    ? keyof C[K] : any;
+    ? Exclude<keyof C[K], '__default'> : any;
 }
 ```
 
-Utility type to convert configuration objects to props types.
+Utility type to convert configuration objects to props types. The `__default` key is excluded from the generated prop types since it's used internally.
 
 ## Notes
 

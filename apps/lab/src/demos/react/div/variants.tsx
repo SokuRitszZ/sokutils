@@ -1,4 +1,4 @@
-import { divy } from '@sokutils/react';
+import { divVariants, divy } from '@sokutils/react';
 import { Switch, Tabs, TabsList, TabsTrigger } from '@sokutils/shadcn-ui';
 import { keys } from 'lodash-es';
 import { useState } from 'react';
@@ -29,9 +29,8 @@ const btn = {
 const Button = divy(
   'button',
   {
-    __debug: 'button',
-    variant: btn.vars,
-    sz: btn.size,
+    variant: divVariants(btn.vars, 'default'),
+    sz: divVariants(btn.size, 'default'),
     disabled: 'pointer-events-none opacity-50',
   },
   'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all [&_svg]:pointer-events-none [&_svg:not([class*=\'size-\'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
