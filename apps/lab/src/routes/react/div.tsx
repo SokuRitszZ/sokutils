@@ -4,7 +4,7 @@ import Boolean from '@demos/react/clx/boolean';
 import Variants from '@demos/react/clx/variants';
 import { L } from '../../components/layout';
 
-export const Route = createFileRoute('/react/clx')({
+export const Route = createFileRoute('/react/div')({
   component: RouteComponent,
   staticData: {
     title: 'clx',

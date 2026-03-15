@@ -1,4 +1,4 @@
-import { w } from '@sokutils/react';
+import { divx, divy } from '@sokutils/react';
 import { Button, Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle, toast } from '@sokutils/shadcn-ui';
 import { ReactNode } from 'react';
 
@@ -11,8 +11,8 @@ interface Props {
 }
 
 const UI = {
-  Content: w('div', {}, 'border-1 border-border rounded-md p-3'),
-  Code: w('pre', {}, 'whitespace-pre-wrap', 'border-1 border-border rounded-md', 'p-6 overflow-auto', 'text-12px', 'max-h-320px'),
+  Content: divx({}, 'border-1 border-border rounded-md p-3'),
+  Code: divy ('pre', {}, 'whitespace-pre-wrap', 'border-1 border-border rounded-md', 'p-6 overflow-auto', 'text-12px', 'max-h-320px'),
 };
 
 export const DemoCard = ({ title, description, noContent, content, code: _code }: Props) => {

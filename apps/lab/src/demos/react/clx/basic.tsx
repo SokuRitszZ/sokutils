@@ -1,14 +1,12 @@
-import { clx } from '@sokutils/react';
+import { divx } from '@sokutils/react';
 
 const UI = {
-  Layout: clx.w(
-    'div', 
+  Layout: divx(
     {}, 
     'flex flex-col items-stretch gap-2', 
     'w-200px max-h-400px',
   ),
-  Item: clx.w(
-    'div',
+  Item: divx(
     {},
     'py-2 px-4 rounded-md',
     'bg-primary text-primary-foreground',

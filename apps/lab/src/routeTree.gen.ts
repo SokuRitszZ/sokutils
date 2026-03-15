@@ -13,8 +13,8 @@ import { Route as Apps_rootRouteImport } from './routes/apps/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ReactPromisifyRouteImport } from './routes/react/promisify'
+import { Route as ReactDivRouteImport } from './routes/react/div'
 import { Route as ReactCtxRouteImport } from './routes/react/ctx'
-import { Route as ReactClxRouteImport } from './routes/react/clx'
 import { Route as PureIifeRouteImport } from './routes/pure/iife'
 import { Route as PureEitherRouteImport } from './routes/pure/either'
 import { Route as PureCacheRouteImport } from './routes/pure/cache'
@@ -39,14 +39,14 @@ const ReactPromisifyRoute = ReactPromisifyRouteImport.update({
   path: '/react/promisify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReactDivRoute = ReactDivRouteImport.update({
+  id: '/react/div',
+  path: '/react/div',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReactCtxRoute = ReactCtxRouteImport.update({
   id: '/react/ctx',
   path: '/react/ctx',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReactClxRoute = ReactClxRouteImport.update({
-  id: '/react/clx',
-  path: '/react/clx',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PureIifeRoute = PureIifeRouteImport.update({
@@ -78,8 +78,8 @@ export interface FileRoutesByFullPath {
   '/pure/cache': typeof PureCacheRoute
   '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
-  '/react/clx': typeof ReactClxRoute
   '/react/ctx': typeof ReactCtxRoute
+  '/react/div': typeof ReactDivRoute
   '/react/promisify': typeof ReactPromisifyRoute
 }
 export interface FileRoutesByTo {
@@ -90,8 +90,8 @@ export interface FileRoutesByTo {
   '/pure/cache': typeof PureCacheRoute
   '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
-  '/react/clx': typeof ReactClxRoute
   '/react/ctx': typeof ReactCtxRoute
+  '/react/div': typeof ReactDivRoute
   '/react/promisify': typeof ReactPromisifyRoute
 }
 export interface FileRoutesById {
@@ -103,8 +103,8 @@ export interface FileRoutesById {
   '/pure/cache': typeof PureCacheRoute
   '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
-  '/react/clx': typeof ReactClxRoute
   '/react/ctx': typeof ReactCtxRoute
+  '/react/div': typeof ReactDivRoute
   '/react/promisify': typeof ReactPromisifyRoute
 }
 export interface FileRouteTypes {
@@ -117,8 +117,8 @@ export interface FileRouteTypes {
     | '/pure/cache'
     | '/pure/either'
     | '/pure/iife'
-    | '/react/clx'
     | '/react/ctx'
+    | '/react/div'
     | '/react/promisify'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -129,8 +129,8 @@ export interface FileRouteTypes {
     | '/pure/cache'
     | '/pure/either'
     | '/pure/iife'
-    | '/react/clx'
     | '/react/ctx'
+    | '/react/div'
     | '/react/promisify'
   id:
     | '__root__'
@@ -141,8 +141,8 @@ export interface FileRouteTypes {
     | '/pure/cache'
     | '/pure/either'
     | '/pure/iife'
-    | '/react/clx'
     | '/react/ctx'
+    | '/react/div'
     | '/react/promisify'
   fileRoutesById: FileRoutesById
 }
@@ -154,8 +154,8 @@ export interface RootRouteChildren {
   PureCacheRoute: typeof PureCacheRoute
   PureEitherRoute: typeof PureEitherRoute
   PureIifeRoute: typeof PureIifeRoute
-  ReactClxRoute: typeof ReactClxRoute
   ReactCtxRoute: typeof ReactCtxRoute
+  ReactDivRoute: typeof ReactDivRoute
   ReactPromisifyRoute: typeof ReactPromisifyRoute
 }
 
@@ -189,18 +189,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReactPromisifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/react/div': {
+      id: '/react/div'
+      path: '/react/div'
+      fullPath: '/react/div'
+      preLoaderRoute: typeof ReactDivRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/react/ctx': {
       id: '/react/ctx'
       path: '/react/ctx'
       fullPath: '/react/ctx'
       preLoaderRoute: typeof ReactCtxRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/react/clx': {
-      id: '/react/clx'
-      path: '/react/clx'
-      fullPath: '/react/clx'
-      preLoaderRoute: typeof ReactClxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pure/iife': {
@@ -242,8 +242,8 @@ const rootRouteChildren: RootRouteChildren = {
   PureCacheRoute: PureCacheRoute,
   PureEitherRoute: PureEitherRoute,
   PureIifeRoute: PureIifeRoute,
-  ReactClxRoute: ReactClxRoute,
   ReactCtxRoute: ReactCtxRoute,
+  ReactDivRoute: ReactDivRoute,
   ReactPromisifyRoute: ReactPromisifyRoute,
 }
 export const routeTree = rootRouteImport
