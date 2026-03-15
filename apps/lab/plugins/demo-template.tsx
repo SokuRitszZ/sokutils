@@ -30,17 +30,7 @@ export default () => {
   }, []);
   
   return (
-    <Suspense
-      fallback={
-        <DemoCard
-          title={meta.title}
-          description={meta.description}
-          noContent
-          content={undefined}
-          code={code}
-        />
-      }
-    >
+    <Suspense>
       <DemoCard
         title={meta.title}
         description={meta.description}
