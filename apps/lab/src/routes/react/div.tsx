@@ -7,7 +7,7 @@ import { L } from '../../components/layout';
 export const Route = createFileRoute('/react/div')({
   component: RouteComponent,
   staticData: {
-    title: 'clx',
+    title: 'div',
     priority: 2,
   },
 });
