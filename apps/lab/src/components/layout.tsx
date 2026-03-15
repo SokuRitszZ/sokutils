@@ -1,5 +1,5 @@
-import { w } from '@sokutils/react';
+import { divx } from '@sokutils/react';
 
 export const L = {
-  Demo: w('div', { }, 'w-800px mx-auto', 'flex flex-col items-stretch gap-6'),
+  Demo: divx({ }, 'w-800px mx-auto', 'flex flex-col items-stretch gap-6'),
 };

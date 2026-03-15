@@ -1,5 +1,5 @@
-import { w } from '@sokutils/react';
-import { Collapsible, SidebarGroup, CollapsibleTrigger, SidebarMenuButton, CollapsibleContent, SidebarMenu, SidebarMenuItem, SidebarGroupContent, SidebarGroupLabel } from '@sokutils/shadcn-ui';
+import { divx } from '@sokutils/react';
+import { Collapsible, SidebarGroup, SidebarMenuButton, SidebarMenu, SidebarMenuItem, SidebarGroupContent, SidebarGroupLabel } from '@sokutils/shadcn-ui';
 import { useRouter, useMatches, useNavigate } from '@tanstack/react-router';
 import { chain } from 'lodash';
 
@@ -9,7 +9,7 @@ interface Props {
   icon?: string;
 }
 
-const Icon = w('div', {}, 'size-1em mr-1');
+const Icon = divx({}, 'size-1em mr-1');
 
 export const GroupedRoutes = ({ icon, title, prefix }: Props) => {
   const router = useRouter();
