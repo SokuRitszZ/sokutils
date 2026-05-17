@@ -3,31 +3,38 @@ import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFo
 import { get } from 'lodash-es';
 import { useEffect, useState } from 'react';
 
-interface Props {
+interface Input {
   default?: string;
 }
 
-const [confirmNode, confirm] = promisify<Props, string>(({ visible, setVisible, resolve, reject, props }) => {
-  const [input, setInput] = useState('');
+type Output = string
+
+interface Config {
+  title: string;
+}
+
+export const [ConfirmRegister, useConfirmTools, confirm] = promisify.component<Output, Input, Config>(() => {
+  const { input, visible, resolve, reject, config } = useConfirmTools();
+  const [text, setText] = useState('');
 
   useEffect(() => {
-    setInput(props.default ?? '');
-  }, [props]);
+    setText(input?.default ?? '');
+  }, [input?.default]);
 
   return (
-    <Dialog open={visible} onOpenChange={setVisible}>
+    <Dialog open={visible}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
+          <DialogTitle>{config.title}</DialogTitle>
           <DialogDescription>
-            <Input value={input} onInput={(e) => setInput(get(e.target, 'value')! as string)} />
+            <Input value={text} onInput={(e) => setText(get(e.target, 'value')! as string)} />
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" onClick={() => reject('')}>Cancel</Button>
+            <Button variant="outline" onClick={() => reject(undefined)}>Cancel</Button>
           </DialogClose>
-          <Button type="submit" onClick={() => resolve(input)}>OK</Button>
+          <Button type="submit" onClick={() => resolve(text)}>OK</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -43,7 +50,7 @@ export default () => {
   return (
     <div>
       <Toaster />
-      {confirmNode}
+      <ConfirmRegister title='NoName Title' />
       <Button onClick={handleClick}>Confirm</Button>
     </div>
   );
