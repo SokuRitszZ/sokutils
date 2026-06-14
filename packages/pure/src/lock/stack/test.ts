@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lock } from '.';
+import { lock } from '..';
 
 describe('[lock.stack]', () => {
   it('queues callers in LIFO order', async () => {

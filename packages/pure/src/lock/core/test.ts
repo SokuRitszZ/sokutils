@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { lock } from '.';
-import { sleep } from './test-utils';
+import { lock } from '..';
+import { sleep } from '../test-utils';
 
 describe('[lock.core]', () => {
   it('locks by awaiting the returned function and unlocks with the returned function', async () => {

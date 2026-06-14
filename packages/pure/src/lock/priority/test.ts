@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { lock } from '.';
-import { sleep } from './test-utils';
+import { lock } from '..';
+import { sleep } from '../test-utils';
 
 describe('[lock.priority]', () => {
   it('queues callers by lower numeric priority without preempting the current holder', async () => {

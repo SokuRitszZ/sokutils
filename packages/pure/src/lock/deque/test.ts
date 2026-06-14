@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { lock } from '.';
-import { sleep } from './test-utils';
+import { lock } from '..';
+import { sleep } from '../test-utils';
 
 describe('[lock.deque]', () => {
   it('queues callers at the back by default', async () => {

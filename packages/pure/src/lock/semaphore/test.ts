@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { lock } from '.';
-import { sleep } from './test-utils';
+import { lock } from '..';
+import { sleep } from '../test-utils';
 
 describe('[lock.semaphore]', () => {
   it('allows up to capacity callers to run concurrently', async () => {

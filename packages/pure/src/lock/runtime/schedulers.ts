@@ -1,4 +1,5 @@
-import type { DequeDirection, Scheduler, Waiter } from './types';
+import type { DequeDirection } from '../deque/types';
+import type { Scheduler, Waiter } from './types';
 
 export const fifoScheduler = <T>(): Scheduler<T> => {
   const queue: Waiter<T>[] = [];

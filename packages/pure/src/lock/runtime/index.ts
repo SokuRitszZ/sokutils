@@ -1,24 +1,27 @@
-import type { Scheduler, Unlock, Waiter, Resolver } from './types';
+import type { Scheduler, Resolver, Waiter } from './types';
+import type { Unlock } from '../core/types';
 
-class ResolverPool<T> {
-  #order = 0;
+const createResolverPool = <T>() => {
+  let order = 0;
 
-  create(input: T): [Promise<Unlock>, Waiter<T>] {
-    let resolve: Resolver | undefined;
-    const promise = new Promise<Unlock>((innerResolve) => {
-      resolve = innerResolve;
-    });
+  return {
+    create: (input: T): [Promise<Unlock>, Waiter<T>] => {
+      let resolve: Resolver | undefined;
+      const promise = new Promise<Unlock>((innerResolve) => {
+        resolve = innerResolve;
+      });
 
-    return [
-      promise,
-      {
-        input,
-        order: this.#order++,
-        resolve: resolve as Resolver,
-      },
-    ];
-  }
-}
+      return [
+        promise,
+        {
+          input,
+          order: order++,
+          resolve: resolve as Resolver,
+        },
+      ];
+    },
+  };
+};
 
 export const validateCapacity = (capacity: number) => {
   if (!Number.isInteger(capacity) || capacity < 1) {
@@ -30,7 +33,7 @@ export const createLock = <T>(capacity: number, scheduler: Scheduler<T>, default
   validateCapacity(capacity);
 
   let available = capacity;
-  const resolverPool = new ResolverPool<T>();
+  const resolverPool = createResolverPool<T>();
 
   const createUnlock = (): Unlock => {
     let unlocked = false;

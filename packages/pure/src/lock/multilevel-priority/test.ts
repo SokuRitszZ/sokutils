@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lock } from '.';
+import { lock } from '..';
 
 describe('[lock.multilevelPriority]', () => {
   it('selects lower numeric priority levels first and preserves FIFO within a level', async () => {
