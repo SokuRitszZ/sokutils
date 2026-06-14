@@ -3,6 +3,8 @@ export type Release = Unlock;
 export type Lock = () => Promise<Unlock>;
 export type Mutex = Lock;
 export type Semaphore = Lock;
+export type PriorityLock = (priority?: number) => Promise<Unlock>;
+export type StackLock = Lock;
 
 type Resolver = (unlock: Unlock) => void;
 
@@ -52,6 +54,37 @@ const fifoScheduler = <T>(): Scheduler<T> => {
   };
 };
 
+const stackScheduler = <T>(): Scheduler<T> => {
+  const queue: Waiter<T>[] = [];
+
+  return {
+    enqueue: waiter => queue.push(waiter),
+    dequeue: () => queue.pop(),
+  };
+};
+
+const priorityScheduler = (): Scheduler<number> => {
+  const queue: Waiter<number>[] = [];
+
+  return {
+    enqueue: waiter => queue.push(waiter),
+    dequeue: () => {
+      let bestIndex = 0;
+
+      for (let index = 1; index < queue.length; index += 1) {
+        const candidate = queue[index];
+        const best = queue[bestIndex];
+
+        if (candidate.input < best.input || (candidate.input === best.input && candidate.order < best.order)) {
+          bestIndex = index;
+        }
+      }
+
+      return queue.splice(bestIndex, 1)[0];
+    },
+  };
+};
+
 const createLock = <T>(capacity: number, scheduler: Scheduler<T>, defaultInput: T) => {
   validateCapacity(capacity);
 
@@ -94,3 +127,7 @@ export const core = (capacity = 1): Lock => createLock(capacity, fifoScheduler<v
 export const mutex = (): Mutex => core();
 
 export const semaphore = (capacity: number): Semaphore => core(capacity);
+
+export const priority = (): PriorityLock => createLock(1, priorityScheduler(), 0);
+
+export const stack = (): StackLock => createLock(1, stackScheduler<void>(), undefined);
