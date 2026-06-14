@@ -223,3 +223,97 @@ describe('[lock.stack]', () => {
     expect(events).toEqual(['fourth', 'third', 'second']);
   });
 });
+
+describe('[lock.multilevelPriority]', () => {
+  it('selects lower numeric priority levels first and preserves FIFO within a level', async () => {
+    const multilevelPriority = lock.multilevelPriority();
+    const events: string[] = [];
+
+    const firstUnlock = await multilevelPriority(5);
+
+    const low = multilevelPriority(10).then((unlock) => {
+      events.push('low');
+      unlock();
+    });
+    const highFirst = multilevelPriority(1).then((unlock) => {
+      events.push('high:first');
+      unlock();
+    });
+    const highSecond = multilevelPriority(1).then((unlock) => {
+      events.push('high:second');
+      unlock();
+    });
+
+    firstUnlock();
+    await Promise.all([low, highFirst, highSecond]);
+
+    expect(events).toEqual(['high:first', 'high:second', 'low']);
+  });
+});
+
+describe('[lock.deque]', () => {
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  it('queues callers at the back by default', async () => {
+    const deque = lock.deque();
+    const events: string[] = [];
+
+    const firstUnlock = await deque();
+
+    const second = deque().then((unlock) => {
+      events.push('second');
+      unlock();
+    });
+    const third = deque('back').then((unlock) => {
+      events.push('third');
+      unlock();
+    });
+
+    firstUnlock();
+    await Promise.all([second, third]);
+
+    expect(events).toEqual(['second', 'third']);
+  });
+
+  it('runs front waiters before already queued back waiters', async () => {
+    const deque = lock.deque();
+    const events: string[] = [];
+
+    const firstUnlock = await deque();
+
+    const back = deque('back').then((unlock) => {
+      events.push('back');
+      unlock();
+    });
+    const front = deque('front').then((unlock) => {
+      events.push('front');
+      unlock();
+    });
+
+    firstUnlock();
+    await Promise.all([back, front]);
+
+    expect(events).toEqual(['front', 'back']);
+  });
+
+  it('does not preempt the current holder when a waiter joins the front', async () => {
+    const deque = lock.deque();
+    const events: string[] = [];
+
+    const firstUnlock = await deque();
+    events.push('start:first');
+
+    const second = deque('front').then((unlock) => {
+      events.push('start:front');
+      unlock();
+    });
+
+    await sleep(10);
+    expect(events).toEqual(['start:first']);
+
+    firstUnlock();
+    await second;
+
+    expect(events).toEqual(['start:first', 'start:front']);
+  });
+});

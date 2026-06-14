@@ -1,7 +1,9 @@
-import { core, mutex, priority, semaphore, stack } from './core';
+import { core, deque, multilevelPriority, mutex, priority, semaphore, stack } from './core';
 
 export const lock = {
   core,
+  deque,
+  multilevelPriority,
   mutex,
   priority,
   semaphore,

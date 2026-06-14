@@ -5,6 +5,9 @@ export type Mutex = Lock;
 export type Semaphore = Lock;
 export type PriorityLock = (priority?: number) => Promise<Unlock>;
 export type StackLock = Lock;
+export type MultilevelPriorityLock = (priority?: number) => Promise<Unlock>;
+export type DequeDirection = 'front' | 'back';
+export type DequeLock = (direction?: DequeDirection) => Promise<Unlock>;
 
 type Resolver = (unlock: Unlock) => void;
 
@@ -85,6 +88,59 @@ const priorityScheduler = (): Scheduler<number> => {
   };
 };
 
+const multilevelPriorityScheduler = (): Scheduler<number> => {
+  const levels = new Map<number, Waiter<number>[]>();
+
+  return {
+    enqueue: (waiter) => {
+      const queue = levels.get(waiter.input);
+
+      if (queue) {
+        queue.push(waiter);
+        return;
+      }
+
+      levels.set(waiter.input, [waiter]);
+    },
+    dequeue: () => {
+      let bestLevel: number | undefined;
+
+      for (const level of levels.keys()) {
+        if (bestLevel === undefined || level < bestLevel) {
+          bestLevel = level;
+        }
+      }
+
+      if (bestLevel === undefined) return undefined;
+
+      const queue = levels.get(bestLevel);
+      const waiter = queue?.shift();
+
+      if (!queue?.length) {
+        levels.delete(bestLevel);
+      }
+
+      return waiter;
+    },
+  };
+};
+
+const dequeScheduler = (): Scheduler<DequeDirection> => {
+  const queue: Waiter<DequeDirection>[] = [];
+
+  return {
+    enqueue: (waiter) => {
+      if (waiter.input === 'front') {
+        queue.unshift(waiter);
+        return;
+      }
+
+      queue.push(waiter);
+    },
+    dequeue: () => queue.shift(),
+  };
+};
+
 const createLock = <T>(capacity: number, scheduler: Scheduler<T>, defaultInput: T) => {
   validateCapacity(capacity);
 
@@ -131,3 +187,7 @@ export const semaphore = (capacity: number): Semaphore => core(capacity);
 export const priority = (): PriorityLock => createLock(1, priorityScheduler(), 0);
 
 export const stack = (): StackLock => createLock(1, stackScheduler<void>(), undefined);
+
+export const multilevelPriority = (): MultilevelPriorityLock => createLock(1, multilevelPriorityScheduler(), 0);
+
+export const deque = (): DequeLock => createLock(1, dequeScheduler(), 'back');
