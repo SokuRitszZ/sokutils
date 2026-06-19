@@ -1,6 +1,6 @@
 
 import { describe, expect, it } from 'vitest';
-import { times } from 'lodash-es';
+import { times } from 'es-toolkit/compat';
 import { hash } from '../mock/hash';
 import { either } from './either';
 import { infinity } from './infinity';

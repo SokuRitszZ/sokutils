@@ -1,6 +1,6 @@
 import { promisify } from '@sokutils/react';
 import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Input, toast, Toaster } from '@sokutils/shadcn-ui';
-import { get } from 'lodash-es';
+import { get } from 'es-toolkit/compat';
 import { useEffect, useState } from 'react';
 
 interface Input {

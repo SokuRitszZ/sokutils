@@ -1,4 +1,4 @@
-import { assign, cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'es-toolkit/compat';
 import hash from 'object-hash';
 import { Fn } from '../types';
 import { CacheSettings, CacheStrategy, CachedFn } from './types';

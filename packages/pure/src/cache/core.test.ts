@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { random, times } from 'lodash-es';
+import { random, times } from 'es-toolkit/compat';
 import { strategy } from './strategy';
 import { cache } from '.';
 

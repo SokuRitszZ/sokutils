@@ -8,5 +8,5 @@ export default defineConfig({
   // minify: true,
   dts: true,
   external: ['react', 'react-dom'],
-  noExternal: ['lodash-es'],
+  noExternal: ['es-toolkit'],
 });

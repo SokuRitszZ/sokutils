@@ -1,6 +1,6 @@
 import { ctx } from '@sokutils/react';
 import { Input } from '@sokutils/shadcn-ui';
-import { get } from 'lodash-es';
+import { get } from 'es-toolkit/compat';
 import { useState } from 'react';
 
 interface Props {

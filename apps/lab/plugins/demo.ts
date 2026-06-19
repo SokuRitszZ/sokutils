@@ -2,7 +2,7 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { path } from '@sokutils/pure';
-import { set } from 'lodash-es';
+import { set } from 'es-toolkit/compat';
 
 import { Plugin } from 'vite';
 
