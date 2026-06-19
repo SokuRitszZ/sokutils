@@ -1,3 +1,4 @@
+import { minBy } from 'es-toolkit';
 import { createLock, defineLockStrategy } from '../core';
 import type { MultilevelPriorityLock } from './types';
 
@@ -16,7 +17,7 @@ export const LockMultilevelPriorityStrategy = () => {
       return ctx;
     },
     dequeue: (ctx) => {
-      const priority = Math.min(...ctx.inputs.keys());
+      const priority = minBy([...ctx.inputs.keys()], priority => priority)!;
       const queue = ctx.inputs.get(priority)!;
       const input = queue.shift()!;
 

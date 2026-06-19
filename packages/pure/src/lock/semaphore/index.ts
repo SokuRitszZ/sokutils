@@ -1,3 +1,4 @@
+import { minBy } from 'es-toolkit';
 import { createLock, defineLockStrategy, validateCapacity } from '../core';
 import type { Semaphore } from './types';
 
@@ -21,7 +22,7 @@ export const LockSemaphoreStrategy = (available: number) => {
       return ctx;
     },
     blocked: ctx => ctx.inputs.length <= 0
-      || ctx.available < Math.min(...ctx.inputs.map(([capacity]) => capacity)),
+      || ctx.available < minBy(ctx.inputs, ([capacity]) => capacity)![0],
   });
 };
 
