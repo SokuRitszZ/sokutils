@@ -1,15 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { lock } from '..';
 import { sleep } from '../test-utils';
+import { createLock } from '../next-core';
+import { LockSemaphoreStrategy } from './next';
 
 describe('[lock.semaphore]', () => {
   it('allows up to capacity callers to run concurrently', async () => {
-    const semaphore = lock.semaphore(2);
+    const semaphore = createLock(
+      LockSemaphoreStrategy(2),
+    );
     let active = 0;
     let maxActive = 0;
 
     const task = async () => {
-      const release = await semaphore();
+      const release = await semaphore(1);
       active += 1;
       maxActive = Math.max(maxActive, active);
       await sleep(10);
@@ -28,17 +32,19 @@ describe('[lock.semaphore]', () => {
   });
 
   it('queues callers in FIFO order by default', async () => {
-    const semaphore = lock.semaphore(2);
+    const semaphore = createLock(
+      LockSemaphoreStrategy(2),
+    );
     const events: string[] = [];
 
-    const firstRelease = await semaphore();
-    const secondRelease = await semaphore();
+    const firstRelease = await semaphore(1);
+    const secondRelease = await semaphore(1);
 
-    const third = semaphore().then((release) => {
+    const third = semaphore(1).then((release) => {
       events.push('third');
       release();
     });
-    const fourth = semaphore().then((release) => {
+    const fourth = semaphore(1).then((release) => {
       events.push('fourth');
       release();
     });
