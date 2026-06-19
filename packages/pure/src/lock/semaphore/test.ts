@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { lock } from '..';
 import { sleep } from '../test-utils';
-import { createLock } from '../next-core';
-import { LockSemaphoreStrategy } from './next';
+import { createLock } from '../core';
+import { LockSemaphoreStrategy } from '.';
 
 describe('[lock.semaphore]', () => {
   it('allows up to capacity callers to run concurrently', async () => {

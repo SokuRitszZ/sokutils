@@ -1,6 +1,33 @@
-import { core } from '../core';
+import { createLock, defineLockStrategy, validateCapacity } from '../core';
 import type { Semaphore } from './types';
 
-export const semaphore = (capacity: number): Semaphore => core(capacity);
+export const LockSemaphoreStrategy = (available: number) => {
+  validateCapacity(available);
+
+  return defineLockStrategy({
+    initContext: () => ({ available, inputs: [] as [number][] }),
+    enqueue: (ctx, input: [number]) => {
+      ctx.inputs.push(input);
+      return ctx;
+    },
+    dequeue: (ctx) => {
+      const scheduled = ctx.inputs.find(input => ctx.available >= input[0])!;
+      ctx.available -= scheduled[0];
+      ctx.inputs = ctx.inputs.filter(input => input !== scheduled);
+      return [ctx, scheduled] as const;
+    },
+    unlock: (ctx, input) => {
+      ctx.available += input[0];
+      return ctx;
+    },
+    blocked: ctx => ctx.inputs.length <= 0
+      || ctx.available < Math.min(...ctx.inputs.map(([capacity]) => capacity)),
+  });
+};
+
+export const semaphore = (capacity: number): Semaphore => {
+  const lock = createLock(LockSemaphoreStrategy(capacity));
+  return () => lock(1);
+};
 
 export type { Semaphore } from './types';

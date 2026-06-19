@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createLock } from '../next-core';
-import { LockMutexStrategy } from './next';
+import { createLock } from '../core';
+import { LockMutexStrategy } from '.';
 
 describe('[lock.mutex]', () => {
   it('creates a callable mutex alias', async () => {
