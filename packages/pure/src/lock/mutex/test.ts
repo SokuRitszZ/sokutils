@@ -2,11 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { createLock } from '../core';
 import { LockMutexStrategy } from '.';
 
-describe('[mutex]', () => {
-  it('creates a callable mutex alias', async () => {
-    const mutex = createLock(
-      LockMutexStrategy(),
-    );
+describe('[LockMutexStrategy]', () => {
+  it('creates a callable mutex lock', async () => {
+    const mutex = createLock(LockMutexStrategy());
     const unlock = await mutex();
 
     unlock();

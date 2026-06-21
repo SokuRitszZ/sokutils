@@ -1,14 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { semaphore as createSemaphore } from '..';
 import { sleep } from '../test-utils';
 import { createLock } from '../core';
 import { LockSemaphoreStrategy } from '.';
 
-describe('[semaphore]', () => {
+describe('[LockSemaphoreStrategy]', () => {
   it('allows up to capacity callers to run concurrently', async () => {
-    const semaphore = createLock(
-      LockSemaphoreStrategy(2),
-    );
+    const semaphore = createLock(LockSemaphoreStrategy(2));
     let active = 0;
     let maxActive = 0;
 
@@ -32,9 +29,7 @@ describe('[semaphore]', () => {
   });
 
   it('queues callers in FIFO order by default', async () => {
-    const semaphore = createLock(
-      LockSemaphoreStrategy(2),
-    );
+    const semaphore = createLock(LockSemaphoreStrategy(2));
     const events: string[] = [];
 
     const firstRelease = await semaphore(1);
@@ -62,13 +57,13 @@ describe('[semaphore]', () => {
   });
 
   it('ignores duplicate release calls', async () => {
-    const semaphore = createSemaphore(1);
-    const firstRelease = await semaphore();
+    const semaphore = createLock(LockSemaphoreStrategy(1));
+    const firstRelease = await semaphore(1);
     let active = 0;
     let maxActive = 0;
 
     const task = async () => {
-      const release = await semaphore();
+      const release = await semaphore(1);
       active += 1;
       maxActive = Math.max(maxActive, active);
       await sleep(10);
@@ -90,7 +85,7 @@ describe('[semaphore]', () => {
   });
 
   it('requires a positive integer capacity', () => {
-    expect(() => createSemaphore(0)).toThrow(TypeError);
-    expect(() => createSemaphore(1.5)).toThrow(TypeError);
+    expect(() => LockSemaphoreStrategy(0)).toThrow(TypeError);
+    expect(() => LockSemaphoreStrategy(1.5)).toThrow(TypeError);
   });
 });

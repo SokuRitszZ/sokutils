@@ -1,4 +1,4 @@
-import type { Lock, LockStrategy, Unlock } from './types';
+import type { LockStrategy, Unlock } from './types';
 
 export * from './types';
 
@@ -70,5 +70,3 @@ export const LockCoreStrategy = (capacity = 1) => {
     blocked: ctx => ctx.available <= 0 || ctx.inputs.length <= 0,
   });
 };
-
-export const core = (capacity = 1): Lock => createLock(LockCoreStrategy(capacity));

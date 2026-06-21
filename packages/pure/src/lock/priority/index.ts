@@ -1,6 +1,5 @@
 import { maxBy } from 'es-toolkit';
-import { createLock, defineLockStrategy } from '../core';
-import type { PriorityLock } from './types';
+import { defineLockStrategy } from '../core';
 
 type PriorityInput = [number?];
 
@@ -26,7 +25,5 @@ export const LockPriorityStrategy = () => {
     blocked: ctx => ctx.handling || ctx.inputs.length <= 0,
   });
 };
-
-export const priority = (): PriorityLock => createLock(LockPriorityStrategy());
 
 export type { PriorityLock } from './types';

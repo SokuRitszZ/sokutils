@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { deque as createDequeLock } from '..';
+import { createLock, LockDequeStrategy } from '..';
 import { sleep } from '../test-utils';
 
-describe('[deque]', () => {
+describe('[LockDequeStrategy]', () => {
   it('queues callers at the back by default', async () => {
-    const deque = createDequeLock();
+    const deque = createLock(LockDequeStrategy());
     const events: string[] = [];
 
     const firstUnlock = await deque();
@@ -25,7 +25,7 @@ describe('[deque]', () => {
   });
 
   it('runs front waiters before already queued back waiters', async () => {
-    const deque = createDequeLock();
+    const deque = createLock(LockDequeStrategy());
     const events: string[] = [];
 
     const firstUnlock = await deque();
@@ -46,7 +46,7 @@ describe('[deque]', () => {
   });
 
   it('does not preempt the current holder when a waiter joins the front', async () => {
-    const deque = createDequeLock();
+    const deque = createLock(LockDequeStrategy());
     const events: string[] = [];
 
     const firstUnlock = await deque();

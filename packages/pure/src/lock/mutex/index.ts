@@ -1,5 +1,4 @@
-import { createLock, defineLockStrategy } from '../core';
-import type { Mutex } from './types';
+import { defineLockStrategy } from '../core';
 
 export type LockMutexStrategyType = 'queue' | 'stack';
 
@@ -22,7 +21,5 @@ export const LockMutexStrategy = (type: LockMutexStrategyType = 'queue') => {
     blocked: ctx => ctx.handling || ctx.inputs.length <= 0,
   });
 };
-
-export const mutex = (): Mutex => createLock(LockMutexStrategy());
 
 export type { Mutex } from './types';

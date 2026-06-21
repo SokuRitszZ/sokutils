@@ -1,6 +1,5 @@
 import { minBy } from 'es-toolkit';
-import { createLock, defineLockStrategy } from '../core';
-import type { MultilevelPriorityLock } from './types';
+import { defineLockStrategy } from '../core';
 
 type MultilevelPriorityInput = [number?];
 
@@ -32,10 +31,6 @@ export const LockMultilevelPriorityStrategy = () => {
     },
     blocked: ctx => ctx.handling || ctx.inputs.size <= 0,
   });
-};
-
-export const multilevelPriority = (): MultilevelPriorityLock => {
-  return createLock(LockMultilevelPriorityStrategy());
 };
 
 export type { MultilevelPriorityLock } from './types';

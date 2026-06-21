@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { priority } from '..';
+import { createLock, LockPriorityStrategy } from '..';
 import { sleep } from '../test-utils';
 
-describe('[priority]', () => {
+describe('[LockPriorityStrategy]', () => {
   it('queues callers by lower numeric priority without preempting the current holder', async () => {
-    const priorityLock = priority();
+    const priorityLock = createLock(LockPriorityStrategy());
     const events: string[] = [];
 
     const firstUnlock = await priorityLock(10);
