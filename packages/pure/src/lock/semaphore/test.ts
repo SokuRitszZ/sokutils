@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { lock } from '..';
+import { semaphore as createSemaphore } from '..';
 import { sleep } from '../test-utils';
 import { createLock } from '../core';
 import { LockSemaphoreStrategy } from '.';
 
-describe('[lock.semaphore]', () => {
+describe('[semaphore]', () => {
   it('allows up to capacity callers to run concurrently', async () => {
     const semaphore = createLock(
       LockSemaphoreStrategy(2),
@@ -62,7 +62,7 @@ describe('[lock.semaphore]', () => {
   });
 
   it('ignores duplicate release calls', async () => {
-    const semaphore = lock.semaphore(1);
+    const semaphore = createSemaphore(1);
     const firstRelease = await semaphore();
     let active = 0;
     let maxActive = 0;
@@ -90,7 +90,7 @@ describe('[lock.semaphore]', () => {
   });
 
   it('requires a positive integer capacity', () => {
-    expect(() => lock.semaphore(0)).toThrow(TypeError);
-    expect(() => lock.semaphore(1.5)).toThrow(TypeError);
+    expect(() => createSemaphore(0)).toThrow(TypeError);
+    expect(() => createSemaphore(1.5)).toThrow(TypeError);
   });
 });

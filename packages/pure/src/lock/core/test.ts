@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { lock } from '..';
+import { core } from '..';
 import { sleep } from '../test-utils';
 
-describe('[lock.core]', () => {
+describe('[core]', () => {
   it('locks by awaiting the returned function and unlocks with the returned function', async () => {
-    const mutex = lock.core();
+    const mutex = core();
     const events: string[] = [];
 
     const task = async (id: number) => {
@@ -34,7 +34,7 @@ describe('[lock.core]', () => {
   });
 
   it('does not unlock until the returned unlock function is called', async () => {
-    const mutex = lock.core();
+    const mutex = core();
     const firstUnlock = await mutex();
     let secondLocked = false;
 
@@ -53,7 +53,7 @@ describe('[lock.core]', () => {
   });
 
   it('ignores duplicate unlock calls', async () => {
-    const mutex = lock.core();
+    const mutex = core();
     const firstUnlock = await mutex();
     const second = mutex();
 

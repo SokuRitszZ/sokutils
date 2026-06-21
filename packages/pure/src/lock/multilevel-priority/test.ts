@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { lock } from '..';
+import { multilevelPriority as createMultilevelPriorityLock } from '..';
 
-describe('[lock.multilevelPriority]', () => {
+describe('[multilevelPriority]', () => {
   it('selects lower numeric priority levels first and preserves FIFO within a level', async () => {
-    const multilevelPriority = lock.multilevelPriority();
+    const multilevelPriority = createMultilevelPriorityLock();
     const events: string[] = [];
 
     const firstUnlock = await multilevelPriority(5);
