@@ -32,5 +32,3 @@ export const LockMultilevelPriorityStrategy = () => {
     blocked: ctx => ctx.handling || ctx.inputs.size <= 0,
   });
 };
-
-export type { MultilevelPriorityLock } from './types';

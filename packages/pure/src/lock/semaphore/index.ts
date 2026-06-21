@@ -24,5 +24,3 @@ export const LockSemaphoreStrategy = (available: number) => {
       || ctx.available < minBy(ctx.inputs, ([capacity]) => capacity)![0],
   });
 };
-
-export type { Semaphore } from './types';

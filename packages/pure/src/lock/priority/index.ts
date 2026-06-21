@@ -25,5 +25,3 @@ export const LockPriorityStrategy = () => {
     blocked: ctx => ctx.handling || ctx.inputs.length <= 0,
   });
 };
-
-export type { PriorityLock } from './types';

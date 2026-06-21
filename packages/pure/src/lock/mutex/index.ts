@@ -21,5 +21,3 @@ export const LockMutexStrategy = (type: LockMutexStrategyType = 'queue') => {
     blocked: ctx => ctx.handling || ctx.inputs.length <= 0,
   });
 };
-
-export type { Mutex } from './types';

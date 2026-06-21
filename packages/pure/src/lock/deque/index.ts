@@ -1,5 +1,6 @@
 import { defineLockStrategy } from '../core';
-import type { DequeDirection, DequeLock } from './types';
+
+export type DequeDirection = 'front' | 'back';
 
 type DequeInput = [DequeDirection?];
 
@@ -23,5 +24,3 @@ export const LockDequeStrategy = () => {
     blocked: ctx => ctx.handling || ctx.inputs.length <= 0,
   });
 };
-
-export type { DequeDirection, DequeLock } from './types';
