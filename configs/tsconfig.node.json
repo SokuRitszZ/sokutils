@@ -4,6 +4,7 @@
     "verbatimModuleSyntax": false,
     "strictNullChecks": true,
     "module": "esnext",
-    "moduleResolution": "bundler"
-  }
+    "moduleResolution": "bundler",
+    "target": "esnext",
+  },
 }

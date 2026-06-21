@@ -18,10 +18,9 @@
     "@tanstack/react-router": "^1.132.33",
     "@tanstack/react-router-devtools": "^1.132.33",
     "@types/lodash": "^4.17.20",
-    "@types/lodash-es": "^4.17.12",
+    "es-toolkit": "^1.47.1",
     "highlight.js": "^11.11.1",
     "lodash": "^4.17.21",
-    "lodash-es": "^4.17.21",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

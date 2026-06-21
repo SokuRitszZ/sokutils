@@ -1,6 +1,6 @@
 
 import { createContext, FC, useContext, useMemo, useState } from 'react';
-import { assign, keys, upperFirst } from 'lodash-es';
+import { assign, keys, upperFirst } from 'es-toolkit/compat';
 import { Anemic, SoftRequired } from '../types';
 
 export const createModelCtx = <M, >(initialModel: SoftRequired<M>) => {

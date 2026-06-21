@@ -1,4 +1,4 @@
-import { assign } from 'lodash-es';
+import { assign } from 'es-toolkit/compat';
 import { createContext, FC, useContext } from 'react';
 
 export const createPropsCtx = <P, >() => {

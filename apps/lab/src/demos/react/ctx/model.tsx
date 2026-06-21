@@ -1,6 +1,6 @@
 import { ctx } from '@sokutils/react';
 import { Button, Input } from '@sokutils/shadcn-ui';
-import { get } from 'lodash-es';
+import { get } from 'es-toolkit/compat';
 
 interface Model {
   count: number;

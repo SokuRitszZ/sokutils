@@ -1,6 +1,6 @@
 import { divVariants, divy } from '@sokutils/react';
 import { Switch, Tabs, TabsList, TabsTrigger } from '@sokutils/shadcn-ui';
-import { keys } from 'lodash-es';
+import { keys } from 'es-toolkit/compat';
 import { useState } from 'react';
 
 const btn = {

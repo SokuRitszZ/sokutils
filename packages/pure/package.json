@@ -20,13 +20,12 @@
   "devDependencies": {
     "@soku-conf/eslint-config": "^1.1.2",
     "@tsconfig/node20": "^20.1.6",
-    "@types/lodash-es": "^4.17.12",
     "tsup": "^8.5.0",
     "vitest": "^3.2.4"
   },
   "dependencies": {
     "@types/object-hash": "^3.0.6",
-    "lodash-es": "^4.17.21",
+    "es-toolkit": "^1.47.1",
     "object-hash": "^3.0.0"
   }
 }

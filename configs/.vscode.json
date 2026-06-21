@@ -26,5 +26,8 @@
     }
   ],
   "git.blame.editorDecoration.enabled": true,
-  "git.enableSmartCommit": true
+  "git.enableSmartCommit": true,
+  "cSpell.words": [
+    "Deque"
+  ]
 }

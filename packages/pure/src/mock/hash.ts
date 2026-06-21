@@ -1,4 +1,4 @@
-import { isString, upperFirst } from 'lodash-es';
+import { isString, upperFirst } from 'es-toolkit/compat';
 import { unwrap } from '../functions';
 
 export const hash = {

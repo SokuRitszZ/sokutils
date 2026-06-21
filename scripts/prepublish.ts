@@ -2,7 +2,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import { writeFileSync } from 'fs';
 import { match } from 'ts-pattern';
-import { get, set } from 'lodash-es';
+import { get, set } from 'es-toolkit/compat';
 import { either } from '../packages/pure/src';
 
 const MODES = ['feat', 'fix'] as const;

@@ -1,4 +1,4 @@
-import { assign, chain, keys } from 'lodash-es';
+import { assign, keys } from 'es-toolkit/compat';
 import { createContext, FC, useContext, useMemo } from 'react';
 
 type ResolvedHooksMap<HM extends Record<string, () => any>> = {

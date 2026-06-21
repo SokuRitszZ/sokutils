@@ -25,8 +25,7 @@
     "react-dom": ">=18"
   },
   "dependencies": {
-    "@types/lodash-es": "^4.17.12",
-    "lodash-es": "^4.17.21",
+    "es-toolkit": "^1.47.1",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
