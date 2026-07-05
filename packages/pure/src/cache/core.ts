@@ -1,70 +1,74 @@
-import { cloneDeep } from 'es-toolkit/compat';
-import hash from 'object-hash';
-import { Fn } from '../types';
-import { CacheSettings, CacheStrategy, CachedFn } from './types';
-import { strategy } from './strategy';
+import { once, pick } from 'es-toolkit';
+import { z } from 'zod/v4-mini';
+import { NormalFunction } from '../types';
+import { CacheCoreOptions, CacheFinalFunction, CacheStorage, CacheStorageLoadResult, CacheStrategy } from './types';
 
-const _default: CacheSettings<Fn> = {
-  key: (params) => hash(params, { ignoreUnknown: false }),
-  strategy: (_, ctx: any) => { 
-    return {
-      hit: true,
-      ctx,
-    };
-  },
-};
+export const CacheCore =
+  <F extends NormalFunction, Context, AsyncLoad extends boolean = false>
+  (options: CacheCoreOptions<F, Context, AsyncLoad>)
+    : CacheFinalFunction<F, AsyncLoad> => {
+  type FinalType = Awaited<ReturnType<F>>;
+  type FnParameters = Parameters<F>;
+  type FinalFunction = CacheFinalFunction<F, AsyncLoad>;
+  type StorageLoadResult = CacheStorageLoadResult<F, Context>;
 
-export const core = <F extends Fn>(fn: F): CachedFn<F> => {
-  type P = Parameters<F>;
-  type R = ReturnType<F>;
-  const settings = cloneDeep(_default);
-  const valueMap: Record<string, R> = {};
+  let context: Context;
+  let valuesMap: Partial<Record<string, FinalType>>;
 
-  let ctx: any;
+  const fallbackInit = () => {
+    context = options.Strategy.InitContext();
+    valuesMap = {};
+  };
 
-  const cachedFn = (...params: P): R => {
-    const key = settings.key(params);
-    const strategy = settings.strategy(key, ctx);
-
-    ctx = strategy.ctx;
-    
-    if (strategy.hit && key in valueMap) {
-      return valueMap[key];
+  const loadStorage = (result: StorageLoadResult) => {
+    if (!options.Storage) {
+      fallbackInit();
+      return;
     }
-
-    const result = fn(...params);
-
-    valueMap[key] = result;
-
-    return result;
+    const contextValidation = options.Storage?.ContextValidationZod.safeParse(result.Context);
+    const valuesMapValidation = z.record(z.string(), options.Storage.ValueValidationZod).safeParse(result.CachedValueMap);
+    context = contextValidation.data ?? options.Strategy.InitContext();
+    valuesMap = valuesMapValidation.data ?? {};
   };
-  
-  // settings change
-  const resolved = new Proxy(cachedFn, {
-    get: (_, key) => {
-      return (setting: any) => {
-        settings[key] = setting;
-        return resolved;
-      };
-    },
-  }) as CachedFn<F>;
+  const loadStorageResultSync = (result: StorageLoadResult | undefined) => {
+    return result ? loadStorage(result) : fallbackInit();
+  };
+  const initStorage = once(() => {
+    const initResult = options.Storage?.Load();
+    return initResult instanceof Promise ? initResult.then(loadStorageResultSync) : loadStorageResultSync(initResult);
+  });
 
-  return resolved;
-};
-
-export const build = () => {
-  let stra: CacheStrategy;
-
-  const wrap = <F extends Fn>(f: F): F => {
-    return stra ? core(f).strategy(stra) : core(f);
+  const getAndHandleResult = (...params: FnParameters): ReturnType<F> => {
+    const key = options.KeyGenerator(...params);
+    const strategyResult = options.Strategy.Match({ CurrentContext: context, Key: key, Params: params });
+    const defer = () => {
+      context = strategyResult.NextContext;
+      if (strategyResult.PickedKeys) {
+        valuesMap = pick(valuesMap, strategyResult.PickedKeys);
+      }
+      options.Storage?.Save(context, valuesMap as Record<string, FinalType>);
+    };
+    if (strategyResult.Hit) {
+      defer();
+      return valuesMap[key] as ReturnType<F>;
+    }
+    else {
+      const result = options.Function(...params);
+      valuesMap[key] = result;
+      defer();
+      return result as ReturnType<F>;
+    }
   };
 
-  const _strategy = (_stra: CacheStrategy) => {
-    stra = _stra;
-    return wrap;
+  const wrappedFn = (...params: FnParameters) => {
+    const loadResult = initStorage();
+    if (loadResult instanceof Promise) {
+      return loadResult.then(() => getAndHandleResult(...params));
+    }
+    else {
+      return getAndHandleResult(...params);
+    }
   };
 
-  wrap.strategy = _strategy;
-
-  return wrap;
-};
+  return wrappedFn as FinalFunction;
+  };
