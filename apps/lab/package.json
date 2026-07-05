@@ -20,7 +20,8 @@
     "es-toolkit": "catalog:",
     "highlight.js": "^11.11.1",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@tanstack/router-plugin": "^1.132.33",
