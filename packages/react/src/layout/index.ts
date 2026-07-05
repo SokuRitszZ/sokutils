@@ -1,7 +1,7 @@
 import { assign, camelCase, compact, fromPairs, times, upperFirst } from 'es-toolkit/compat';
+import { css } from 'goober';
 import { divx } from '../div';
 import { Layout } from './types';
-import { css } from 'goober';
 
 const createArea = (name: string) => {
   return divx({}, css`
@@ -32,7 +32,7 @@ const createMainLayout = (matrix: string[][], track?: Track) => {
     grid-template-areas: ${gridTemplateAreas};
     grid-template-rows: ${trackRows};
     grid-template-columns: ${trackCols};
-    `)
+    `);
 };
 
 const convertFormatToMatrix = (format: string): string[][] => {
@@ -59,7 +59,7 @@ const convertFormatToMatrix = (format: string): string[][] => {
 
 export const layout = <S extends string>(format: S, track?: Track): Layout<S> => {
   const components = compact(
-    format.split(/\s+/).filter(s => !['-', '+'].includes(s))
+    format.split(/\s+/).filter(s => !['-', '+'].includes(s)),
   );
   const entries = components.map((comp, i) => {
     const name = upperFirst(camelCase(comp));
