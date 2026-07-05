@@ -1,5 +1,5 @@
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, cn } from '@sokutils/shadcn-ui';
-import { chain, values } from 'lodash';
+import { sortBy, values } from 'es-toolkit/compat';
 import { useMatches, useNavigate, useRouter } from '@tanstack/react-router';
 
 export const MainRoutes = () => {
@@ -7,10 +7,10 @@ export const MainRoutes = () => {
   const nav = useNavigate();
   const match = useMatches().at(-1);
   const routes = values(root.children);
-  const mains = chain(routes)
-    .filter(r => !!r.options.staticData.isMain)
-    .sortBy(r => r.options.staticData.priority)
-    .value();
+  const mains = sortBy(
+    routes.filter(r => !!r.options.staticData.isMain),
+    [r => r.options.staticData.priority],
+  );
 
   return (
     <SidebarGroup>

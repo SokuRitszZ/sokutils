@@ -1,5 +1,5 @@
 import { ctx } from '@sokutils/react';
-import { times } from 'lodash';
+import { times } from 'es-toolkit/compat';
 import { useEffect, useRef, useState } from 'react';
 import { faker } from '@faker-js/faker';
 import { Button, toast } from '@sokutils/shadcn-ui';
