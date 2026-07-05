@@ -1,3 +1,6 @@
 packages:
   - "packages/*"
   - "apps/*"
+
+catalog:
+  es-toolkit: 1.49.0
