@@ -1,6 +1,7 @@
 import { ZodMiniType } from 'zod/v4-mini';
 import { CacheDefineStorage } from '../../define';
 import { unwrap } from '../../../functions';
+import { CACHE_STORAGE_FORMAT_ZOD } from '../../consts';
 
 interface CachePresetStorageLocalStorageOptions {
   ContextValidationZod: ZodMiniType<any>;
@@ -17,11 +18,8 @@ export const CachePresetStorageLocalStorage = CacheDefineStorage((options: Cache
     Load: () => {
       const rawValue = options.LocalStorageLike.getItem(options.Key) || '';
       const rawParsedValue = unwrap(() => JSON.parse(rawValue));
-
-      return {
-        Context: rawParsedValue?.Context,
-        CachedValueMap: rawParsedValue?.CacheValueMap,
-      };
+      const validation = CACHE_STORAGE_FORMAT_ZOD.safeParse(rawParsedValue);
+      return validation.data;
     },
     Save: (context, cachedValueMap) => {
       const stringified = unwrap(() => JSON.stringify({
