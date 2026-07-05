@@ -1,65 +1,126 @@
-import { describe, expect, it } from 'vitest';
-import { random, times } from 'es-toolkit/compat';
-import { strategy } from './strategy';
-import { cache } from '.';
+import { describe, expect, expectTypeOf, it } from 'vitest';
+import { z } from 'zod/v4-mini';
+import { CACHE_DEFAULT_KEY_GENERATOR, CACHE_DEFAULT_STRATEGY } from './consts';
+import { CacheCore } from './core';
+import { CachePresetStorageLocalStorage } from './preset';
 
-describe('[cache.core]', () => {
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+class MemoryStorage implements Storage {
+  private values = new Map<string, string>();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const rand = (_: number) => Math.random();
+  get length() {
+    return this.values.size;
+  }
 
-  it('default', () => {
-    const cached = cache.core(rand);
+  clear() {
+    this.values.clear();
+  }
 
-    expect(cached(1)).not.toBeUndefined();
-    expect(cached(1)).toBe(cached(1));
-    expect(cached(2)).toBe(cached(2));
-    expect(cached(1)).not.toBe(cached(2));
+  getItem(key: string) {
+    return this.values.get(key) ?? null;
+  }
+
+  key(index: number) {
+    return [...this.values.keys()][index] ?? null;
+  }
+
+  removeItem(key: string) {
+    this.values.delete(key);
+  }
+
+  setItem(key: string, value: string) {
+    this.values.set(key, value);
+  }
+}
+
+describe('[CacheCore]', () => {
+  const SyncFn = (str: string, num: number) => str + num;
+  const AsyncFn = async (str: string, num: number) => str + num;
+
+  it('caches sync function results without storage', () => {
+    let callCount = 0;
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: (key: string) => {
+        callCount += 1;
+        return `${key}:${callCount}`;
+      },
+    });
+
+    expect(cached('a')).toBe('a:1');
+    expect(cached('a')).toBe('a:1');
+    expect(cached('b')).toBe('b:2');
   });
 
-  it('build', () => {
-    const stra = cache.build();
-    const cached = stra(rand);
+  it('loads sync storage before matching cache values', () => {
+    const storageLike = new MemoryStorage();
+    storageLike.setItem('core.test.ts', JSON.stringify({
+      Context: {
+        [JSON.stringify(['cached', 1])]: true,
+      },
+      CachedValueMap: {
+        [JSON.stringify(['cached', 1])]: 'from-storage',
+      },
+    }));
 
-    expect(cached(1)).not.toBeUndefined();
-    expect(cached(1)).toBe(cached(1));
-    expect(cached(2)).toBe(cached(2));
-    expect(cached(1)).not.toBe(cached(2));
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: SyncFn,
+      Storage: CachePresetStorageLocalStorage({
+        Key: 'core.test.ts',
+        LocalStorageLike: storageLike,
+        ContextValidationZod: z.record(z.string(), z.boolean()),
+        ValueValidationZod: z.string(),
+      }),
+    });
+
+    expect(cached('cached', 1)).toBe('from-storage');
   });
 
-  it('duration strategy', async () => {
-    const cached = cache.core(rand)
-      .strategy(strategy.duration(1000));
+  it('falls back when storage load result is invalid', () => {
+    const storageLike = new MemoryStorage();
+    storageLike.setItem('core-invalid.test.ts', JSON.stringify({
+      Context: {
+        [JSON.stringify(['cached', 1])]: true,
+      },
+      CachedValueMap: 'not-a-record',
+    }));
+    let callCount = 0;
 
-    expect(cached(1)).toBe(await sleep(100).then(() => cached(1)));
-    expect(cached(1)).toBe(await sleep(200).then(() => cached(1)));
-    expect(cached(1)).not.toBe(await sleep(701).then(() => cached(1)));
-    expect(cached(1)).toBe(cached(1));
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: (key: string) => {
+        callCount += 1;
+        return `${key}:${callCount}`;
+      },
+      Storage: CachePresetStorageLocalStorage({
+        Key: 'core-invalid.test.ts',
+        LocalStorageLike: storageLike,
+        ContextValidationZod: z.record(z.string(), z.boolean()),
+        ValueValidationZod: z.string(),
+      }),
+    });
+
+    expect(cached('cached')).toBe('cached:1');
+    expect(cached('cached')).toBe('cached:1');
   });
 
-  it('lru strategy', async () => {
-    const N = random(4, 10);
-    
-    const cached = cache.core(rand)
-      .strategy(strategy.lru(N));
+  it('keeps sync and async return types', () => {
+    const CachedSyncFn = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: SyncFn,
+    });
 
-    const preTwo = cached(2);
-    times(N, i => expect(cached(i)).toBe(cached(i)));
-    
-    // the 0 has been queued to tail;
-    // [0, 1, 2] -> [1, 2, 0]
-    const preZero = cached(0);
-    // [1, 2, 0] -> [2, 0, N]
-    cached(N);
-    // [2, 0, N] -> [2, N, 0]
-    const curZero = cached(0);
+    const CachedAsyncFn = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: AsyncFn,
+    });
 
-    expect(preZero).toBe(curZero);
-    
-    // [2, N, 0] -> [N, 0, N+1]
-    cached(N + 1);
-    // [N, 0, N+1] -> [0, N+1, 2]
-    expect(preTwo).not.toBe(cached(2));
+    expectTypeOf(CachedSyncFn).toEqualTypeOf<(str: string, num: number) => string>();
+    expectTypeOf(CachedAsyncFn).toEqualTypeOf<(str: string, num: number) => Promise<string>>();
   });
 });

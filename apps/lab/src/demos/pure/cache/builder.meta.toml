@@ -1,0 +1,2 @@
+title = "Builder with storage"
+description = "Use `CacheBuild` to compose a function with localStorage-backed cache."

@@ -1,2 +1,2 @@
-title = "Basic usage"
-description = "Use `cache.core` to memoize any function—default cache strategy same as `lodash.memoize`."
+title = "Core cache"
+description = "Use `CacheCore` with a key generator and a strategy to memoize a function."

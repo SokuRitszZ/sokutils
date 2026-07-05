@@ -1,12 +1,11 @@
 import { Button } from '@sokutils/shadcn-ui';
 import { divx, divy } from '@sokutils/react';
 import { useState } from 'react';
-import { callCachedBasic, getBasicCallCount } from './basic.code';
+import { callCachedBuilder, clearCachedBuilder, getBuilderCallCount } from './builder.code';
 
 const UI = {
   Layout: divx({}, 'flex flex-col gap-3'),
   Row: divx({}, 'flex items-center gap-2 flex-wrap'),
-  ButtonGroup: divx({}, 'flex items-center gap-2'),
   Panel: divx({}, 'grid grid-cols-3 gap-2 text-sm'),
   Metric: divx({}, 'rounded-md border border-border bg-muted/40 p-3'),
   Label: divy('div', {}, 'text-muted-foreground text-xs'),
@@ -15,33 +14,39 @@ const UI = {
 
 export default () => {
   const [calls, setCalls] = useState(0);
-  const [key, setKey] = useState('alpha');
+  const [userId, setUserId] = useState('u-001');
   const [value, setValue] = useState('');
 
   const handleCall = () => {
-    setValue(callCachedBasic(key));
-    setCalls(getBasicCallCount());
+    setValue(callCachedBuilder(userId));
+    setCalls(getBuilderCallCount());
+  };
+
+  const handleClear = () => {
+    clearCachedBuilder();
+    window.location.reload();
   };
 
   return (
     <UI.Layout>
       <UI.Row>
-        <UI.ButtonGroup>
-          <Button variant={key === 'alpha' ? 'default' : 'secondary'} onClick={() => setKey('alpha')}>alpha</Button>
-          <Button variant={key === 'beta' ? 'default' : 'secondary'} onClick={() => setKey('beta')}>beta</Button>
-        </UI.ButtonGroup>
+        <Button variant={userId === 'u-001' ? 'default' : 'secondary'} onClick={() => setUserId('u-001')}>u-001</Button>
+        <Button variant={userId === 'u-002' ? 'default' : 'secondary'} onClick={() => setUserId('u-002')}>u-002</Button>
         <Button variant='outline' onClick={handleCall}>
-          <div className='i-tabler:player-play' />
-          Call cached fn
+          <div className='i-tabler:database' />
+          Call with storage
+        </Button>
+        <Button variant='ghost' onClick={handleClear}>
+          <div className='i-tabler:trash' />
         </Button>
       </UI.Row>
       <UI.Panel>
         <UI.Metric>
-          <UI.Label>key</UI.Label>
-          <UI.Value>{key}</UI.Value>
+          <UI.Label>user id</UI.Label>
+          <UI.Value>{userId}</UI.Value>
         </UI.Metric>
         <UI.Metric>
-          <UI.Label>value</UI.Label>
+          <UI.Label>cached token</UI.Label>
           <UI.Value>{value || '-'}</UI.Value>
         </UI.Metric>
         <UI.Metric>

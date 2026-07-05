@@ -1,11 +1,8 @@
-import { build, core } from './core';
-import { strategy } from './strategy';
-
-export const cache = {
-  core,
-  build,
-  preset: {
-    strategy,
-  },
-};
-
+import * as cacheLegacy from './legacy';
+export { cacheLegacy };
+export * from './preset';
+export * from './consts';
+export * from './core';
+export * from './define';
+export * from './types';
+export * from './builder';

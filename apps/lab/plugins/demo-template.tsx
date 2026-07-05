@@ -1,6 +1,6 @@
 import { DemoCard } from 'demo-card';
 
-import code from '__ORIGIN_DEMO_FILE__?raw';
+import code from '__ORIGIN_DEMO_FILE__?demo-code-raw';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import meta from '__ORIGIN_DEMO_FILE__.meta.toml';

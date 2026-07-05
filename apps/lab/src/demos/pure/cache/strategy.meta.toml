@@ -1,0 +1,2 @@
+title = "Preset strategies"
+description = "Switch between LRU, timeout, and expire-at cache strategies."

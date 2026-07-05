@@ -4,3 +4,4 @@ packages:
 
 catalog:
   es-toolkit: 1.49.0
+  zod: 4.4.3
