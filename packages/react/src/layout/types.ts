@@ -23,3 +23,12 @@ type KebabCaseToCamelCase<S extends string> = Capitalize<CamelCase<S>>;
 export type LayoutFormat<S extends string> = Exclude<Split<S, ''>, ''>;
 type ComponentProps = PropsWithChildren<{ className?: string }>;
 export type Layout<S extends string> = ReturnType<typeof divx> & Record<KebabCaseToCamelCase<LayoutFormat<S>>, FC<ComponentProps>>;
+
+type Example = `
+header  -       -
+sidebar content -
++       +       -
+footer  -       corner
+`
+type Test = KebabCaseToCamelCase<LayoutFormat<Example>>
+type Final = Layout<Example>
