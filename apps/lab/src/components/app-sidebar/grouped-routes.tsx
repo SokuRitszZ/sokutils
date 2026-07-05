@@ -1,7 +1,7 @@
 import { divx } from '@sokutils/react';
 import { Collapsible, SidebarGroup, SidebarMenuButton, SidebarMenu, SidebarMenuItem, SidebarGroupContent, SidebarGroupLabel } from '@sokutils/shadcn-ui';
 import { useRouter, useMatches, useNavigate } from '@tanstack/react-router';
-import { chain } from 'lodash';
+import { sortBy, values } from 'es-toolkit/compat';
 
 interface Props {
   prefix: string;
@@ -17,11 +17,10 @@ export const GroupedRoutes = ({ icon, title, prefix }: Props) => {
   const match = useMatches().at(-1);
   const nav = useNavigate();
 
-  const pureRoutes = chain(root.children)
-    .values()
-    .filter(r => r.fullPath.startsWith(prefix))
-    .sortBy(r => r.options.staticData.priority)
-    .value();
+  const pureRoutes = sortBy(
+    values(root.children).filter(r => r.fullPath.startsWith(prefix)),
+    [r => r.options.staticData.priority],
+  );
   
   return (
     <Collapsible defaultOpen className="group/collapsible">

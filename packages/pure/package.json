@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@types/object-hash": "^3.0.6",
-    "es-toolkit": "^1.47.1",
+    "es-toolkit": "catalog:",
     "object-hash": "^3.0.0"
   }
 }
