@@ -1,5 +1,6 @@
 import { ZodMiniType } from 'zod/v4-mini';
 import { CacheDefineStorage } from '../../define';
+import { CACHE_STORAGE_FORMAT_ZOD } from '../../consts';
 
 interface CachePresetStorageIDBOptions {
   ContextValidationZod: ZodMiniType<any>;
@@ -46,7 +47,7 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
 
     const database = await waitRequest(request);
 
-    if (database.objectStoreNames.contains(CONST_DATABASE_NAME)) {
+    if (database.objectStoreNames.contains(CONST_TABLE_NAME)) {
       return database;
     }
 
@@ -55,7 +56,7 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
 
     const upgradeRequest = idb.open(CONST_DATABASE_NAME, nextVersion);
     upgradeRequest.onupgradeneeded = () => {
-      upgradeRequest.result.createObjectStore(CONST_DATABASE_NAME);
+      upgradeRequest.result.createObjectStore(CONST_TABLE_NAME);
     };
 
     return waitRequest(upgradeRequest);
@@ -67,24 +68,17 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
     ContextValidationZod: options.ContextValidationZod,
     Load: async () => {
       const database = await openDatabase();
-      const transaction = database.transaction(CONST_DATABASE_NAME, 'readonly');
-      const rawValue = await waitRequest(transaction.objectStore(CONST_DATABASE_NAME).get(options.Key)) as {
-        Context?: unknown;
-        CachedValueMap?: Record<string, unknown>;
-      } | undefined;
+      const transaction = database.transaction(CONST_TABLE_NAME, 'readonly');
+      const rawValue = await waitRequest(transaction.objectStore(CONST_TABLE_NAME).get(options.Key));
 
       database.close();
-
-      return {
-        Context: rawValue?.Context,
-        CachedValueMap: rawValue?.CachedValueMap ?? {},
-      };
+      return CACHE_STORAGE_FORMAT_ZOD.safeParse(rawValue).data;
     },
     Save: async (context, cachedValueMap) => {
       const database = await openDatabase();
-      const transaction = database.transaction(CONST_DATABASE_NAME, 'readwrite');
+      const transaction = database.transaction(CONST_TABLE_NAME, 'readwrite');
 
-      transaction.objectStore(CONST_DATABASE_NAME).put({
+      transaction.objectStore(CONST_TABLE_NAME).put({
         Context: context,
         CachedValueMap: cachedValueMap,
       }, options.Key);
