@@ -11,7 +11,8 @@
   "scripts": {
     "prepublish": "tsx ../../scripts/prepublish.ts",
     "build": "tsup",
-    "test": "vitest"
+    "test:dev": "vitest",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
