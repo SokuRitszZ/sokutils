@@ -5,3 +5,5 @@ packages:
 catalog:
   es-toolkit: 1.49.0
   zod: 4.4.3
+  # tsdown 依赖的 ts 版本少了个 sys.useCaseSensitiveFileNames，先回退 6
+  typescript: 6.0.2

@@ -1,8 +1,6 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig, mergeConfig } from 'vitest/config';
+import commonLibConfig from '../../configs/vitest.config.ts';
 
-export default defineConfig({
-  test: {
-    disableConsoleIntercept: true,
-    include: ['src/**/*.test.ts', 'src/**/test.ts'],
-  },
-});
+export default defineConfig(
+  mergeConfig(commonLibConfig, {}),
+);
