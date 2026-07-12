@@ -1,7 +1,6 @@
 import { defineConfig } from 'tsdown';
 
 export const TSDOWN_LIBRARY_CONFIG = defineConfig({
-  cwd: process.cwd(),
   entry: 'src/index.ts',
   outDir: 'dist',
   format: 'esm',
