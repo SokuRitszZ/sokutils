@@ -1,0 +1,47 @@
+name: Update package versions
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - labeled
+
+concurrency:
+  group: update-package-versions-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  update-versions:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (
+        github.event.label.name == 'patch' ||
+        github.event.label.name == 'minor'
+      )
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out pull request branch
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Update changed package versions
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          VERSION_TYPE: ${{ github.event.label.name }}
+        run: bash .github/scripts/update-package-versions.sh
+
+      - name: Commit version updates
+        env:
+          BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+          VERSION_TYPE: ${{ github.event.label.name }}
+        run: bash .github/scripts/commit-package-versions.sh

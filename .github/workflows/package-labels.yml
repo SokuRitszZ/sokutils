@@ -1,0 +1,28 @@
+name: Label changed packages
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  label-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted workflow scripts
+        uses: actions/checkout@v6
+
+      - name: Synchronize package labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/sync-package-labels.sh
