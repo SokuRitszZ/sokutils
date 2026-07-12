@@ -10,7 +10,7 @@
   },
   "scripts": {
     "prepublish": "tsx ../../scripts/prepublish.ts",
-    "build": "tsup",
+    "build": "tsdown",
     "test:dev": "vitest",
     "test": "vitest run"
   },
@@ -22,7 +22,6 @@
     "@soku-conf/eslint-config": "^1.1.2",
     "@tsconfig/node20": "^20.1.6",
     "fake-indexeddb": "^6.2.5",
-    "tsup": "^8.5.0",
     "vitest": "^3.2.4"
   },
   "dependencies": {
