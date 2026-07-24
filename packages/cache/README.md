@@ -1,4 +1,15 @@
-# Cache 使用指南
+# Cache
+
+`@sokutils/cache` 提供类型安全的函数结果缓存，支持可配置的 key
+生成器、缓存策略和持久化存储。
+
+## 安装
+
+```bash
+pnpm add @sokutils/cache
+```
+
+## 使用指南
 
 本文指导 AI 和开发者正确创建、选择和扩展 cache。实现约束见 [AGENTS.md](./AGENTS.md)。
 
@@ -10,7 +21,7 @@
 import {
   CacheBuild,
   CachePresetStrategyLRU,
-} from '@sokutils/pure';
+} from '@sokutils/cache';
 
 const getUser = CacheBuild()
   .Function(async (id: string) => fetchUser(id))
@@ -78,7 +89,7 @@ import {
   CACHE_DEFAULT_KEY_GENERATOR,
   CacheCore,
   CachePresetStrategyTimeout,
-} from '@sokutils/pure';
+} from '@sokutils/cache';
 
 const cached = CacheCore({
   Function: (id: string) => loadValue(id),
@@ -165,7 +176,7 @@ import {
   CacheBuild,
   CachePresetStorageLocalStorage,
   CachePresetStrategyOnce,
-} from '@sokutils/pure';
+} from '@sokutils/cache';
 
 const cached = CacheBuild()
   .Function((id: string) => loadName(id))
@@ -193,7 +204,7 @@ import {
   CacheBuild,
   CachePresetStorageIDB,
   CachePresetStrategyLRU,
-} from '@sokutils/pure';
+} from '@sokutils/cache';
 
 const cached = CacheBuild()
   .Function((id: string) => loadName(id))
@@ -210,6 +221,9 @@ const value = await cached('user-1');
 
 浏览器外使用时，通过 IDBFactory 注入兼容实现。Storage.Save 不会被 CacheCore await；需要“保存完成后才能继续”的强一致持久化时，当前 API 不满足要求。
 
+为兼容从 `@sokutils/pure` 迁移前已经持久化的数据，IDB preset 继续使用
+`@sokutils/pure` 作为内部数据库名。
+
 ## 自定义 Strategy
 
 调用方可以通过 `CacheDefineStrategy` 定义命中和淘汰规则：
@@ -218,7 +232,7 @@ const value = await cached('user-1');
 import {
   CacheBuild,
   CacheDefineStrategy,
-} from '@sokutils/pure';
+} from '@sokutils/cache';
 
 interface UseCountContext {
   [key: string]: number;
@@ -262,7 +276,7 @@ return {
 
 ```ts
 import { z } from 'zod/v4-mini';
-import { CacheDefineStorage } from '@sokutils/pure';
+import { CacheDefineStorage } from '@sokutils/cache';
 
 const CacheStorageMemory = CacheDefineStorage((key: string) => {
   let snapshot: unknown;
@@ -308,10 +322,6 @@ const cached = CacheBuild()
 
 需要自动清除 rejection、single-flight 或 stale-while-revalidate 时，应先扩展 core 并补充并发测试，不要假设当前 API 已支持。
 
-## Legacy API
-
-`cacheLegacy` 只用于兼容旧调用方式。新代码使用 CacheBuild、CacheCore、CacheDefineStrategy 和 CacheDefineStorage，不要继续扩展 legacy。
-
 ## 常见错误
 
 - Function 参数是对象却直接依赖默认 JSON key，没有确认稳定性。
@@ -322,4 +332,3 @@ const cached = CacheBuild()
 - 假设 Storage.Save 已完成或错误会传播给调用者。
 - 假设 timeout 会在 hit 时续期。
 - 假设 expire-at 过期后会自动开启新周期。
-- 使用 legacy API 开发新功能。
