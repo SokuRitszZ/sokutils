@@ -1,7 +1,7 @@
 {
-  "name": "@sokutils/react",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@sokutils/react-context",
+  "version": "0.0.0",
+  "description": "Typed React context factories for props, state models, and hooks",
   "main": "index.js",
   "type": "module",
   "exports": {
@@ -15,15 +15,28 @@
     "dev": "tsdown --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "context",
+    "hooks",
+    "typescript"
+  ],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.10.0",
   "peerDependencies": {
     "react": ">=18"
   },
+  "dependencies": {
+    "es-toolkit": "catalog:"
+  },
   "devDependencies": {
     "@types/react": ">=18",
     "typescript": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SokuRitszZ/sokutils.git",
+    "directory": "packages/react-context"
   }
 }

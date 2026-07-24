@@ -6,6 +6,7 @@
       "@demos/*": ["./src/demos/*"],
       "@sokutils/shadcn-ui": ["./node_modules/@sokutils/shadcn-ui/src"],
       "@sokutils/react": ["./node_modules/@sokutils/react/src"],
+      "@sokutils/react-context": ["./node_modules/@sokutils/react-context/src"],
       "@sokutils/pure": ["./node_modules/@sokutils/pure/src"],
       "demo-card": ["./src/components/demo-card"],
     },
