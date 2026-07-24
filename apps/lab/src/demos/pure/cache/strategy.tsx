@@ -14,6 +14,9 @@ const UI = {
 
 type Mode = Parameters<typeof createCachedByStrategy>[0];
 
+const modes = ['lru', 'timeout', 'expireAt'] as const;
+const cacheKeys = ['a', 'b', 'c'] as const;
+
 export default () => {
   const [mode, setMode] = useState<Mode>('lru');
   const [key, setKey] = useState('a');
@@ -43,16 +46,16 @@ export default () => {
   return (
     <UI.Layout>
       <UI.Row>
-        {(['lru', 'timeout', 'expireAt'] as const).map(x => (
+        {modes.map(x =>
           <Button key={x} variant={mode === x ? 'default' : 'secondary'} onClick={() => handleModeChange(x)}>
             {x}
-          </Button>
-        ))}
-        {(['a', 'b', 'c'] as const).map(x => (
+          </Button>,
+        )}
+        {cacheKeys.map(x =>
           <Button key={x} variant={key === x ? 'outline' : 'ghost'} onClick={() => setKey(x)}>
             {x}
-          </Button>
-        ))}
+          </Button>,
+        )}
         <Button variant='outline' onClick={handleCall}>
           <div className='i-tabler:bolt' />
           Call

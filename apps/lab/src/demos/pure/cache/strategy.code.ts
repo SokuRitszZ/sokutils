@@ -1,4 +1,4 @@
-import { CACHE_DEFAULT_KEY_GENERATOR, CacheCore, CachePresetStrategyExpireAt, CachePresetStrategyLRU, CachePresetStrategyTimeout } from '@sokutils/pure';
+import { CACHE_DEFAULT_KEY_GENERATOR, CacheCore, CachePresetStrategyExpireAt, CachePresetStrategyLRU, CachePresetStrategyTimeout } from '@sokutils/cache';
 
 // demo-code:start
 type Mode = 'lru' | 'timeout' | 'expireAt';
