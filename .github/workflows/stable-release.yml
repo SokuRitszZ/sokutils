@@ -40,18 +40,11 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Configure npm token fallback
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [ -n "$NPM_TOKEN" ]; then
-            echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          fi
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Publish stable
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           RELEASE_BRANCH: ${{ github.event.pull_request.head.ref }}
         run: npx tsx scripts/stable-release.ts
