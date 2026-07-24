@@ -18,6 +18,7 @@ permissions:
 jobs:
   publish-stable:
     name: Publish stable package
+    environment: NPM_PUBLISH
     runs-on: ubuntu-latest
     if: >-
       github.event.pull_request.merged == true &&

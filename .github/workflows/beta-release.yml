@@ -16,6 +16,7 @@ permissions:
 jobs:
   publish-beta:
     name: Publish beta package
+    environment: NPM_PUBLISH
     runs-on: ubuntu-latest
     if: github.actor != 'github-actions[bot]'
 
