@@ -1,13 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
-import Basic from '@demos/react/div/basic';
-import Boolean from '@demos/react/div/boolean';
-import Variants from '@demos/react/div/variants';
+import Basic from '@demos/react/rck/basic';
+import Conditions from '@demos/react/rck/conditions';
+import Variants from '@demos/react/rck/variants';
 import { L } from '../../components/layout';
 
-export const Route = createFileRoute('/react/div')({
+export const Route = createFileRoute('/react/rck')({
   component: RouteComponent,
   staticData: {
-    title: 'div',
+    title: 'React Component Kit (RCK)',
     priority: 2,
   },
 });
@@ -16,7 +16,7 @@ function RouteComponent() {
   return (
     <L.Demo>
       <Basic />
-      <Boolean />
+      <Conditions />
       <Variants />
     </L.Demo>
   );

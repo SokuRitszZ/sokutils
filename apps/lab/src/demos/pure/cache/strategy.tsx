@@ -1,15 +1,15 @@
+import { rck } from '@sokutils/react-component-kit';
 import { Button } from '@sokutils/shadcn-ui';
-import { divx, divy } from '@sokutils/react';
 import { useMemo, useState } from 'react';
 import { createCachedByStrategy, getStrategyCallCount, resetStrategyCallCount } from './strategy.code';
 
 const UI = {
-  Layout: divx({}, 'flex flex-col gap-3'),
-  Row: divx({}, 'flex items-center gap-2 flex-wrap'),
-  Panel: divx({}, 'grid grid-cols-4 gap-2 text-sm'),
-  Metric: divx({}, 'rounded-md border border-border bg-muted/40 p-3'),
-  Label: divy('div', {}, 'text-muted-foreground text-xs'),
-  Value: divy('div', {}, 'font-mono font-medium mt-1 break-all'),
+  Layout: rck.div('flex flex-col gap-3'),
+  Row: rck.div('flex items-center gap-2 flex-wrap'),
+  Panel: rck.div('grid grid-cols-4 gap-2 text-sm'),
+  Metric: rck.div('rounded-md border border-border bg-muted/40 p-3'),
+  Label: rck.div('text-muted-foreground text-xs'),
+  Value: rck.div('font-mono font-medium mt-1 break-all'),
 };
 
 type Mode = Parameters<typeof createCachedByStrategy>[0];

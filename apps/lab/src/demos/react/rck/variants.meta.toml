@@ -1,0 +1,2 @@
+title = "RCK variants and style priority"
+description = "Compose base, variant, size, and boolean styles; later configurations and render-time `className` take priority."

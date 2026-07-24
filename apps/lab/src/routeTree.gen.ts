@@ -12,9 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as Apps_rootRouteImport } from './routes/apps/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ReactRckRouteImport } from './routes/react/rck'
 import { Route as ReactPromisifyRouteImport } from './routes/react/promisify'
 import { Route as ReactLayoutRouteImport } from './routes/react/layout'
-import { Route as ReactDivRouteImport } from './routes/react/div'
 import { Route as ReactCtxRouteImport } from './routes/react/ctx'
 import { Route as PureIifeRouteImport } from './routes/pure/iife'
 import { Route as PureEitherRouteImport } from './routes/pure/either'
@@ -35,6 +35,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReactRckRoute = ReactRckRouteImport.update({
+  id: '/react/rck',
+  path: '/react/rck',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReactPromisifyRoute = ReactPromisifyRouteImport.update({
   id: '/react/promisify',
   path: '/react/promisify',
@@ -43,11 +48,6 @@ const ReactPromisifyRoute = ReactPromisifyRouteImport.update({
 const ReactLayoutRoute = ReactLayoutRouteImport.update({
   id: '/react/layout',
   path: '/react/layout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReactDivRoute = ReactDivRouteImport.update({
-  id: '/react/div',
-  path: '/react/div',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReactCtxRoute = ReactCtxRouteImport.update({
@@ -85,9 +85,9 @@ export interface FileRoutesByFullPath {
   '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
   '/react/ctx': typeof ReactCtxRoute
-  '/react/div': typeof ReactDivRoute
   '/react/layout': typeof ReactLayoutRoute
   '/react/promisify': typeof ReactPromisifyRoute
+  '/react/rck': typeof ReactRckRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
@@ -98,9 +98,9 @@ export interface FileRoutesByTo {
   '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
   '/react/ctx': typeof ReactCtxRoute
-  '/react/div': typeof ReactDivRoute
   '/react/layout': typeof ReactLayoutRoute
   '/react/promisify': typeof ReactPromisifyRoute
+  '/react/rck': typeof ReactRckRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -112,9 +112,9 @@ export interface FileRoutesById {
   '/pure/either': typeof PureEitherRoute
   '/pure/iife': typeof PureIifeRoute
   '/react/ctx': typeof ReactCtxRoute
-  '/react/div': typeof ReactDivRoute
   '/react/layout': typeof ReactLayoutRoute
   '/react/promisify': typeof ReactPromisifyRoute
+  '/react/rck': typeof ReactRckRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -127,9 +127,9 @@ export interface FileRouteTypes {
     | '/pure/either'
     | '/pure/iife'
     | '/react/ctx'
-    | '/react/div'
     | '/react/layout'
     | '/react/promisify'
+    | '/react/rck'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
@@ -140,9 +140,9 @@ export interface FileRouteTypes {
     | '/pure/either'
     | '/pure/iife'
     | '/react/ctx'
-    | '/react/div'
     | '/react/layout'
     | '/react/promisify'
+    | '/react/rck'
   id:
     | '__root__'
     | '/about'
@@ -153,9 +153,9 @@ export interface FileRouteTypes {
     | '/pure/either'
     | '/pure/iife'
     | '/react/ctx'
-    | '/react/div'
     | '/react/layout'
     | '/react/promisify'
+    | '/react/rck'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -167,9 +167,9 @@ export interface RootRouteChildren {
   PureEitherRoute: typeof PureEitherRoute
   PureIifeRoute: typeof PureIifeRoute
   ReactCtxRoute: typeof ReactCtxRoute
-  ReactDivRoute: typeof ReactDivRoute
   ReactLayoutRoute: typeof ReactLayoutRoute
   ReactPromisifyRoute: typeof ReactPromisifyRoute
+  ReactRckRoute: typeof ReactRckRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -195,6 +195,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/react/rck': {
+      id: '/react/rck'
+      path: '/react/rck'
+      fullPath: '/react/rck'
+      preLoaderRoute: typeof ReactRckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/react/promisify': {
       id: '/react/promisify'
       path: '/react/promisify'
@@ -207,13 +214,6 @@ declare module '@tanstack/react-router' {
       path: '/react/layout'
       fullPath: '/react/layout'
       preLoaderRoute: typeof ReactLayoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/react/div': {
-      id: '/react/div'
-      path: '/react/div'
-      fullPath: '/react/div'
-      preLoaderRoute: typeof ReactDivRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/react/ctx': {
@@ -263,9 +263,9 @@ const rootRouteChildren: RootRouteChildren = {
   PureEitherRoute: PureEitherRoute,
   PureIifeRoute: PureIifeRoute,
   ReactCtxRoute: ReactCtxRoute,
-  ReactDivRoute: ReactDivRoute,
   ReactLayoutRoute: ReactLayoutRoute,
   ReactPromisifyRoute: ReactPromisifyRoute,
+  ReactRckRoute: ReactRckRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,10 +1,10 @@
 import { assign, camelCase, compact, fromPairs, times, upperFirst } from 'es-toolkit/compat';
 import { css } from 'goober';
-import { divx } from '../div';
+import { rck } from '../rck/tag';
 import { Layout } from './types';
 
 const createArea = (name: string) => {
-  return divx({}, css`
+  return rck.div(css`
     display: grid;
     overflow: auto;
     width: 100%;
@@ -24,7 +24,7 @@ const createMainLayout = (matrix: string[][], track?: Track) => {
   const trackRows = track?.rows ?? times(matrix.length, () => '1fr').join(' ');
   const trackCols = track?.cols ?? times(matrix[0].length, () => '1fr').join(' ');
 
-  return divx({}, css`
+  return rck.div(css`
     display: grid;
     overflow: auto;
     width: 100%;

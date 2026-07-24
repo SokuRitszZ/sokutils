@@ -1,0 +1,35 @@
+{
+  "name": "@sokutils/react-component-kit",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "es-toolkit": "catalog:",
+    "goober": "^2.1.19",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/react": ">=18",
+    "typescript": "catalog:"
+  }
+}
