@@ -53,4 +53,4 @@ jobs:
       - name: Publish stable
         env:
           RELEASE_BRANCH: ${{ github.event.pull_request.head.ref }}
-        run: tsx scripts/stable-release.ts
+        run: npx tsx scripts/stable-release.ts
