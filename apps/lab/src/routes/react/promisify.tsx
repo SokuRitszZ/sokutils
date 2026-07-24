@@ -5,7 +5,7 @@ import { L } from '../../components/layout';
 export const Route = createFileRoute('/react/promisify')({
   component: RouteComponent,
   staticData: {
-    title: 'promisify',
+    title: 'Promisify',
     priority: 3,
   },
 });
