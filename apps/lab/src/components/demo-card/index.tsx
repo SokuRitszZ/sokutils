@@ -1,4 +1,4 @@
-import { divx, divy } from '@sokutils/react';
+import { rck } from '@sokutils/react-component-kit';
 import { Button, Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle, toast } from '@sokutils/shadcn-ui';
 import { ReactNode, useEffect, useMemo } from 'react';
 import hljs from 'highlight.js/lib/core';
@@ -19,8 +19,8 @@ interface Props {
 }
 
 const UI = {
-  Content: divx({}, 'border-1 border-border rounded-md p-3'),
-  CodeBlock: divy('pre', {}, 'whitespace-pre-wrap border-1 border-border rounded-md p-6 overflow-auto text-12px max-h-320px bg-muted/50 font-mono text-sm'),
+  Content: rck.div('border-1 border-border rounded-md p-3'),
+  CodeBlock: rck.pre('whitespace-pre-wrap border-1 border-border rounded-md p-6 overflow-auto text-12px max-h-320px bg-muted/50 font-mono text-sm'),
 };
 
 export const DemoCard = ({ title, description, noContent, content, code: _code }: Props) => {

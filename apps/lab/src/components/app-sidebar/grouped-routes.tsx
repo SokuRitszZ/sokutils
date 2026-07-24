@@ -1,4 +1,4 @@
-import { divx } from '@sokutils/react';
+import { rck } from '@sokutils/react-component-kit';
 import { Collapsible, SidebarGroup, SidebarMenuButton, SidebarMenu, SidebarMenuItem, SidebarGroupContent, SidebarGroupLabel } from '@sokutils/shadcn-ui';
 import { useRouter, useMatches, useNavigate } from '@tanstack/react-router';
 import { sortBy, values } from 'es-toolkit/compat';
@@ -9,7 +9,7 @@ interface Props {
   icon?: string;
 }
 
-const Icon = divx({}, 'size-1em mr-1');
+const Icon = rck.div('size-1em mr-1');
 
 export const GroupedRoutes = ({ icon, title, prefix }: Props) => {
   const router = useRouter();

@@ -5,7 +5,7 @@ import { L } from '../../components/layout';
 export const Route = createFileRoute('/react/layout')({
   component: RouteComponent,
   staticData: {
-    title: 'layout',
+    title: 'React Component Kit (RCK) layout',
     priority: 3,
   },
 });

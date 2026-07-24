@@ -1,4 +1,4 @@
-import { layout } from '@sokutils/react';
+import { layout } from '@sokutils/react-component-kit';
 
 const template = `
 header  -       -

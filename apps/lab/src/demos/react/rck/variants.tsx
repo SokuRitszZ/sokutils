@@ -1,6 +1,6 @@
-import { divVariants, divy } from '@sokutils/react';
 import { Switch, Tabs, TabsList, TabsTrigger } from '@sokutils/shadcn-ui';
 import { keys } from 'es-toolkit/compat';
+import { rck } from '@sokutils/react-component-kit';
 import { useState } from 'react';
 
 const btn = {
@@ -26,24 +26,26 @@ const btn = {
   },
 };
 
-const Button = divy(
-  'button',
-  {
-    variant: divVariants(btn.vars, 'default'),
-    sz: divVariants(btn.size, 'default'),
-    disabled: 'pointer-events-none opacity-50',
-  },
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all [&_svg]:pointer-events-none [&_svg:not([class*=\'size-\'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+const Button = rck.button(
+  'inline-flex items-center justify-center gap-2',
+  'whitespace-nowrap rounded-md',
+  'text-primary text-sm font-medium',
+  'transition-all',
+  '[&_svg]:pointer-events-none [&_svg:not([class*=\'size-\'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+  'shrink-0',
+  { variant: btn.vars },
+  { sz: btn.size },
+  { disabled: 'pointer-events-none opacity-50' },
 );
 
-const Layout = divy('div', {}, 'flex flex-col items-start gap-2');
-const FormItem = divy('div', {}, 'grid grid-cols-[100px_auto] items-center', 'mt-2');
+const Layout = rck.div('flex flex-col items-start gap-2');
+const FormItem = rck.div('grid grid-cols-[100px_auto] items-center', 'mt-2');
 
 export default () => {
-  const [variant, setVariant] = useState<string>();
-  const [size, setSize] = useState<keyof typeof btn.size>();
+  const [variant, setVariant] = useState<string>('default');
+  const [size, setSize] = useState<keyof typeof btn.size>('default');
   const [disabled, setDisabled] = useState<boolean>();
-  
+
   return (
     <Layout>
       <FormItem>

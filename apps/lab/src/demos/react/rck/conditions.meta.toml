@@ -1,0 +1,2 @@
+title = "RCK conditional styles"
+description = "Apply truthy boolean classes with string or string-array configuration."

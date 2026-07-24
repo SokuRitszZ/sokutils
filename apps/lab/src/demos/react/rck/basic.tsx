@@ -1,13 +1,11 @@
-import { divx } from '@sokutils/react';
+import { rck } from '@sokutils/react-component-kit';
 
 const UI = {
-  Layout: divx(
-    {}, 
-    'flex flex-col items-stretch gap-2', 
+  Layout: rck.div(
+    'flex flex-col items-stretch gap-2',
     'w-200px max-h-400px',
   ),
-  Item: divx(
-    {},
+  Item: rck.div(
     'py-2 px-4 rounded-md',
     'bg-primary text-primary-foreground',
   ),
