@@ -9,7 +9,6 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "prepublish": "tsx ../../scripts/prepublish.ts",
     "build": "tsdown",
     "test:dev": "vitest",
     "test": "vitest run"

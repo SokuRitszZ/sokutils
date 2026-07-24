@@ -3,6 +3,21 @@ import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+interface ExecOptions {
+  cwd?: string;
+  silent?: boolean;
+}
+
+interface PackageJson {
+  name?: string;
+  version: string;
+  [key: string]: unknown;
+}
+
+interface PackResult {
+  filename: string;
+}
+
 const dryRun = process.env.BETA_RELEASE_DRY_RUN === '1';
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
   encoding: 'utf8',
@@ -27,10 +42,11 @@ if (!existsSync(packageJsonPath)) {
 }
 
 const packageJson = readPackageJson();
-const packageName = packageJson.name;
-if (!packageName) {
+const rawPackageName = packageJson.name;
+if (!rawPackageName) {
   throw new Error(`${packageJsonPath} is missing name`);
 }
+const packageName = rawPackageName;
 
 setBaseVersion();
 run('pnpm', ['--filter', packageName, 'build']);
@@ -41,7 +57,7 @@ publishTarball(tarball);
 tagBetaRelease(betaVersion);
 console.log(`Published ${packageName}@${betaVersion}`);
 
-function setBaseVersion() {
+function setBaseVersion(): void {
   if (packageJson.version === baseVersion) {
     return;
   }
@@ -54,7 +70,7 @@ function setBaseVersion() {
   run('git', ['push']);
 }
 
-function prepareBetaVersion() {
+function prepareBetaVersion(): string {
   if (hasPublishedVersion(`${baseVersion}-beta.0`)) {
     const latestBeta = latestPublishedBeta();
     run('npm', ['version', latestBeta, '--no-git-tag-version'], { cwd: packageDir });
@@ -66,25 +82,26 @@ function prepareBetaVersion() {
   return readPackageJson().version;
 }
 
-function latestPublishedBeta() {
+function latestPublishedBeta(): string {
   const versions = npmView([packageName, 'versions', '--json'], '[]');
-  const parsed = JSON.parse(versions);
+  const parsed = JSON.parse(versions) as string[];
   const prefix = `${baseVersion}-beta.`;
   const betaVersions = parsed
     .filter(version => version.startsWith(prefix))
     .sort((left, right) => betaNumber(left) - betaNumber(right));
-  if (betaVersions.length === 0) {
+  const latestBeta = betaVersions.at(-1);
+  if (!latestBeta) {
     throw new Error(`Expected ${packageName}@${baseVersion}-beta.0 to exist`);
   }
 
-  return betaVersions.at(-1);
+  return latestBeta;
 }
 
-function betaNumber(version) {
+function betaNumber(version: string): number {
   return Number(version.slice(`${baseVersion}-beta.`.length));
 }
 
-function hasPublishedVersion(version) {
+function hasPublishedVersion(version: string): boolean {
   try {
     npmView([`${packageName}@${version}`, 'version'], undefined, { silent: true });
     return true;
@@ -94,33 +111,33 @@ function hasPublishedVersion(version) {
   }
 }
 
-function tagBetaRelease(version) {
+function tagBetaRelease(version: string): void {
   const tag = `${packageName}@${version}`;
   run('git', ['tag', tag]);
   run('git', ['push', 'origin', tag]);
 }
 
-function packPackage() {
+function packPackage(): string {
   const packDir = mkdtempSync(path.join(os.tmpdir(), 'sokutils-beta-'));
   const output = run('pnpm', ['pack', '--pack-destination', packDir, '--json'], {
     cwd: packageDir,
   });
-  return JSON.parse(output).filename;
+  return (JSON.parse(output) as PackResult).filename;
 }
 
-function publishTarball(tarball) {
+function publishTarball(tarball: string): void {
   run('npm', ['publish', tarball, '--tag', 'beta', '--access', 'public', '--provenance', '--ignore-scripts']);
 }
 
-function readPackageJson() {
-  return JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+function readPackageJson(): PackageJson {
+  return JSON.parse(readFileSync(packageJsonPath, 'utf8')) as PackageJson;
 }
 
-function writePackageJson(value) {
+function writePackageJson(value: PackageJson): void {
   writeFileSync(packageJsonPath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-function npmView(args, fallback, options = {}) {
+function npmView(args: string[], fallback: string | undefined, options: ExecOptions = {}): string {
   try {
     return exec('npm', ['view', ...args], options).trim();
   }
@@ -132,7 +149,7 @@ function npmView(args, fallback, options = {}) {
   }
 }
 
-function run(command, args, options = {}) {
+function run(command: string, args: string[], options: ExecOptions = {}): string {
   console.log(`$ ${[command, ...args].join(' ')}`);
   if (dryRun && ['add', 'commit', 'push', 'publish', 'tag'].some(commandName => args.includes(commandName))) {
     return '';
@@ -140,7 +157,7 @@ function run(command, args, options = {}) {
   return exec(command, args, options);
 }
 
-function exec(command, args, options = {}) {
+function exec(command: string, args: string[], options: ExecOptions = {}): string {
   return execFileSync(command, args, {
     cwd: options.cwd ?? root,
     encoding: 'utf8',

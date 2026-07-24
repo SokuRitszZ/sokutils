@@ -3,6 +3,20 @@ import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+interface ExecOptions {
+  cwd?: string;
+  silent?: boolean;
+}
+
+interface PackageJson {
+  name?: string;
+  version: string;
+}
+
+interface PackResult {
+  filename: string;
+}
+
 const dryRun = process.env.STABLE_RELEASE_DRY_RUN === '1';
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
   encoding: 'utf8',
@@ -27,10 +41,11 @@ if (!existsSync(packageJsonPath)) {
 }
 
 const packageJson = readPackageJson();
-const packageName = packageJson.name;
-if (!packageName) {
+const rawPackageName = packageJson.name;
+if (!rawPackageName) {
   throw new Error(`${packageJsonPath} is missing name`);
 }
+const packageName = rawPackageName;
 if (packageJson.version !== version) {
   throw new Error(`${packageName} version is ${packageJson.version}; expected ${version} from ${branch}`);
 }
@@ -48,7 +63,7 @@ publishTarball(tarball);
 tagStableRelease(version);
 console.log(`Published ${packageName}@${version}`);
 
-function hasPublishedVersion(targetVersion) {
+function hasPublishedVersion(targetVersion: string): boolean {
   try {
     npmView([`${packageName}@${targetVersion}`, 'version'], undefined, { silent: true });
     return true;
@@ -58,7 +73,7 @@ function hasPublishedVersion(targetVersion) {
   }
 }
 
-function tagStableRelease(targetVersion) {
+function tagStableRelease(targetVersion: string): void {
   const tag = `${packageName}@${targetVersion}`;
   if (tagExists(tag)) {
     console.log(`Tag ${tag} already exists; skipping git tag.`);
@@ -70,7 +85,7 @@ function tagStableRelease(targetVersion) {
   run('git', ['push', 'origin', tag]);
 }
 
-function tagExists(tag) {
+function tagExists(tag: string): boolean {
   try {
     exec('git', ['rev-parse', '--verify', `refs/tags/${tag}`], { silent: true });
     return true;
@@ -80,23 +95,23 @@ function tagExists(tag) {
   }
 }
 
-function packPackage() {
+function packPackage(): string {
   const packDir = mkdtempSync(path.join(os.tmpdir(), 'sokutils-stable-'));
   const output = run('pnpm', ['pack', '--pack-destination', packDir, '--json'], {
     cwd: packageDir,
   });
-  return JSON.parse(output).filename;
+  return (JSON.parse(output) as PackResult).filename;
 }
 
-function publishTarball(tarball) {
+function publishTarball(tarball: string): void {
   run('npm', ['publish', tarball, '--tag', 'latest', '--access', 'public', '--provenance', '--ignore-scripts']);
 }
 
-function readPackageJson() {
-  return JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+function readPackageJson(): PackageJson {
+  return JSON.parse(readFileSync(packageJsonPath, 'utf8')) as PackageJson;
 }
 
-function npmView(args, fallback, options = {}) {
+function npmView(args: string[], fallback: string | undefined, options: ExecOptions = {}): string {
   try {
     return exec('npm', ['view', ...args], options).trim();
   }
@@ -108,7 +123,7 @@ function npmView(args, fallback, options = {}) {
   }
 }
 
-function run(command, args, options = {}) {
+function run(command: string, args: string[], options: ExecOptions = {}): string {
   console.log(`$ ${[command, ...args].join(' ')}`);
   if (dryRun && ['publish', 'push', 'tag'].some(commandName => args.includes(commandName))) {
     return '';
@@ -116,7 +131,7 @@ function run(command, args, options = {}) {
   return exec(command, args, options);
 }
 
-function exec(command, args, options = {}) {
+function exec(command: string, args: string[], options: ExecOptions = {}): string {
   return execFileSync(command, args, {
     cwd: options.cwd ?? root,
     encoding: 'utf8',
