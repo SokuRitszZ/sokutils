@@ -1,0 +1,42 @@
+{
+  "name": "@sokutils/cache",
+  "version": "0.0.0",
+  "description": "Typed function result caching with configurable strategies and storage",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test:dev": "vitest",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "cache",
+    "memoization",
+    "lru",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "dependencies": {
+    "es-toolkit": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.2.5",
+    "typescript": "catalog:",
+    "vitest": "^3.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SokuRitszZ/sokutils.git",
+    "directory": "packages/cache"
+  }
+}
