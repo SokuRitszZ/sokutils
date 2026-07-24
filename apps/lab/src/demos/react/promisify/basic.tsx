@@ -1,4 +1,4 @@
-import { promisify } from '@sokutils/react';
+import { promisify } from '@sokutils/react-promisify';
 import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Input, toast, Toaster } from '@sokutils/shadcn-ui';
 import { get } from 'es-toolkit/compat';
 import { useEffect, useState } from 'react';
