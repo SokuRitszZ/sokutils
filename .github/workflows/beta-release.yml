@@ -3,7 +3,7 @@ name: Beta Release
 on:
   push:
     branches:
-      - 'release/**'
+      - "release/**"
 
 concurrency:
   group: beta-release-${{ github.ref_name }}
@@ -46,4 +46,4 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Publish beta
-        run: npx tsx scripts/beta-release.ts
+        run: tsx scripts/beta-release.ts
