@@ -1,5 +1,4 @@
-import { NormalFunction } from '../types';
-import { CacheCoreOptions, CacheStorage, CacheStrategy } from './types';
+import { CacheCoreOptions, CacheStorage, CacheStrategy, NormalFunction } from './types';
 
 export const CacheDefineStrategy = <BuilderParams extends any[], Context>(builder: (...params: BuilderParams) => CacheStrategy<Context>) => builder;
 

@@ -1,6 +1,6 @@
 import { ZodMiniType } from 'zod/v4-mini';
 import { CacheDefineStorage } from '../../define';
-import { unwrap } from '../../../functions';
+import { unwrap } from '../../utils';
 import { CACHE_STORAGE_FORMAT_ZOD } from '../../consts';
 
 interface CachePresetStorageLocalStorageOptions {
