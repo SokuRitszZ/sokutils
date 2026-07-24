@@ -1,0 +1,38 @@
+{
+  "name": "@sokutils/react-promisify",
+  "version": "0.0.0",
+  "description": "Call React components such as dialogs through a typed Promise API",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch"
+  },
+  "keywords": [
+    "react",
+    "promise",
+    "dialog",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": ">=18",
+    "typescript": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SokuRitszZ/sokutils.git",
+    "directory": "packages/react-promisify"
+  }
+}
