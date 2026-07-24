@@ -1,2 +1,2 @@
-title = "Props"
-description = "Basic usage of `ctx.props`."
+title = "React Context (CTX) props"
+description = "Share a component's input props with descendants through `ctx.props`."

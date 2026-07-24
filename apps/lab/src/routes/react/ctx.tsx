@@ -7,7 +7,7 @@ import { L } from '../../components/layout';
 export const Route = createFileRoute('/react/ctx')({
   component: RouteComponent,
   staticData: {
-    title: 'ctx',
+    title: 'React Context (CTX)',
     priority: 1,
   },
 });

@@ -1,2 +1,2 @@
-title = "Hooks"
-description = "Basic usage of `ctx.hooks`."
+title = "CTX hooks"
+description = "Resolve a group of hooks once and share their results with descendants."

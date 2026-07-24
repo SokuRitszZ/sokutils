@@ -1,2 +1,2 @@
-title = "Model"
-description = "Basic usage of `ctx.models`."
+title = "CTX model"
+description = "Create shared state values and typed setters with `ctx.model`."

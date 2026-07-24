@@ -1,4 +1,4 @@
-import { ctx } from '@sokutils/react';
+import { ctx } from '@sokutils/react-context';
 import { times } from 'es-toolkit/compat';
 import { useEffect, useRef, useState } from 'react';
 import { faker } from '@faker-js/faker';

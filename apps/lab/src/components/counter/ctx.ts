@@ -1,4 +1,4 @@
-import { ctx } from '@sokutils/react';
+import { ctx } from '@sokutils/react-context';
 
 interface Model {
   count: number;
