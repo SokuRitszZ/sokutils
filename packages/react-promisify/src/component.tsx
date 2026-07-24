@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { type FC, useState } from 'react';
 
 export const promisifyComponent = <Output = void, Input = void, Config = void, Error = void>(RawComponent: FC) => {
   const ctx = {
@@ -11,10 +11,11 @@ export const promisifyComponent = <Output = void, Input = void, Config = void, E
   };
 
   const Component = (config: Config) => {
-    // TODO: 
     const [visible, setVisible] = useState(false);
     ctx.config = config;
-    ctx.setVisible = (v: boolean) => {setVisible(v);};
+    ctx.setVisible = (value: boolean) => {
+      setVisible(value);
+    };
     ctx.visible = visible;
 
     return <RawComponent />;
@@ -44,5 +45,6 @@ export const promisifyComponent = <Output = void, Input = void, Config = void, E
       ctx.reject = reject;
     });
   };
+
   return [Component, useTools, func] as const;
 };

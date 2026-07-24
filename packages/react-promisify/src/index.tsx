@@ -5,4 +5,3 @@ export { promisifyComponent } from './component';
 export const promisify = {
   component: promisifyComponent,
 };
-
