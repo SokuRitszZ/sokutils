@@ -127,7 +127,7 @@ function packPackage(): string {
 }
 
 function publishTarball(tarball: string): void {
-  run('npm', ['publish', tarball, '--tag', 'beta', '--access', 'public', '--provenance', '--ignore-scripts']);
+  run('npm', ['publish', tarball, '--tag', 'beta', '--access', 'public']);
 }
 
 function readPackageJson(): PackageJson {
