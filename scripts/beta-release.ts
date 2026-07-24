@@ -61,6 +61,7 @@ function setBaseVersion(): void {
   if (packageJson.version === baseVersion) {
     return;
   }
+  console.log('[beta-release]\n', 'base version: ', baseVersion, '\n', 'package json version: ', packageJson.version, '\n');
   packageJson.version = baseVersion;
   writePackageJson(packageJson);
   run('git', ['config', 'user.name', 'github-actions[bot]']);
