@@ -31,5 +31,10 @@
   "devDependencies": {
     "@types/react": ">=18",
     "typescript": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SokuRitszZ/sokutils",
+    "directory": "packages/react-component-kit"
   }
 }
