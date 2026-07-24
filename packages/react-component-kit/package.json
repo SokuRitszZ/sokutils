@@ -1,6 +1,6 @@
 {
   "name": "@sokutils/react-component-kit",
-  "version": "0.0.0",
+  "version": "0.0.0-test.0",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -34,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SokuRitszZ/sokutils",
+    "url": "git+https://github.com/SokuRitszZ/sokutils.git",
     "directory": "packages/react-component-kit"
   }
 }
