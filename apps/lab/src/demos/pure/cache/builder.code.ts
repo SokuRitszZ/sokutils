@@ -1,4 +1,4 @@
-import { CacheBuild, CachePresetStorageLocalStorage } from '@sokutils/pure';
+import { CacheBuild, CachePresetStorageLocalStorage } from '@sokutils/cache';
 import { z } from 'zod/v4-mini';
 
 // demo-code:start

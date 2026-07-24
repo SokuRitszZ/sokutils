@@ -1,4 +1,4 @@
-import { CACHE_DEFAULT_KEY_GENERATOR, CacheCore, CachePresetStrategyOnce } from '@sokutils/pure';
+import { CACHE_DEFAULT_KEY_GENERATOR, CacheCore, CachePresetStrategyOnce } from '@sokutils/cache';
 
 // demo-code:start
 let callCount = 0;
