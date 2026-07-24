@@ -1,6 +1,6 @@
 {
   "name": "@sokutils/react-component-kit",
-  "version": "0.0.0-test.0",
+  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
