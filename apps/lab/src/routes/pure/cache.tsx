@@ -8,7 +8,7 @@ import { L } from '../../components/layout';
 export const Route = createFileRoute('/pure/cache')({
   component: RouteComponent,
   staticData: {
-    title: 'cache',
+    title: 'Cache',
     priority: 3,
   },
 });

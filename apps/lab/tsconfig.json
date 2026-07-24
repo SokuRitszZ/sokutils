@@ -4,6 +4,7 @@
     "paths": {
       "*": ["./*"],
       "@demos/*": ["./src/demos/*"],
+      "@sokutils/cache": ["./node_modules/@sokutils/cache/src"],
       "@sokutils/shadcn-ui": ["./node_modules/@sokutils/shadcn-ui/src"],
       "@sokutils/react": ["./node_modules/@sokutils/react/src"],
       "@sokutils/react-context": ["./node_modules/@sokutils/react-context/src"],

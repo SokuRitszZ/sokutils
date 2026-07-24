@@ -1,7 +1,6 @@
 import { once, pick } from 'es-toolkit';
 import { z } from 'zod/v4-mini';
-import { NormalFunction } from '../types';
-import { CacheCoreOptions, CacheFinalFunction, CacheStorage, CacheStorageLoadResult, CacheStrategy } from './types';
+import { CacheCoreOptions, CacheFinalFunction, CacheStorageLoadResult, NormalFunction } from './types';
 
 export const CacheCore =
   <F extends NormalFunction, Context, AsyncLoad extends boolean = false>

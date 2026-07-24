@@ -1,6 +1,6 @@
 # Cache 设计与维护约束
 
-本目录实现函数结果缓存。修改 core、builder、strategy 或 storage 前，先遵守本文中的职责边界和不变量。需要调用现有 API 或自定义扩展时，读取 [USAGE.md](./USAGE.md)。
+本目录实现函数结果缓存。修改 core、builder、strategy 或 storage 前，先遵守本文中的职责边界和不变量。需要调用现有 API 或自定义扩展时，读取 [README.md](./README.md)。
 
 ## 核心模型
 
@@ -86,7 +86,6 @@ Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Sto
 4. 新 Storage 使用 `CacheDefineStorage`，AsyncLoad 必须是 `true` 或 `false` 字面量。
 5. Storage payload 保持 `{ Context, CachedValueMap }`，并使用现有 Zod schema 做外层验证。
 6. 优先使用 `es-toolkit` 和现有 `unwrap` 等工具，不重复实现通用操作。
-7. `legacy/` 仅用于旧 API 兼容；不要在 legacy 中开发新能力，也不要让新代码依赖 legacy。
 
 ## 测试约束
 
@@ -100,6 +99,6 @@ Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Sto
 运行验证：
 
 ```bash
-pnpm --filter @sokutils/pure exec vitest run src/cache
-pnpm --filter @sokutils/pure exec vitest run
+pnpm --filter @sokutils/cache exec vitest run src
+pnpm --filter @sokutils/cache exec vitest run
 ```
