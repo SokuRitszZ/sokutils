@@ -104,7 +104,7 @@ function packPackage(): string {
 }
 
 function publishTarball(tarball: string): void {
-  run('npm', ['publish', tarball, '--tag', 'latest', '--access', 'public', '--provenance', '--ignore-scripts']);
+  run('npm', ['publish', tarball, '--tag', 'latest', '--access', 'public']);
 }
 
 function readPackageJson(): PackageJson {
