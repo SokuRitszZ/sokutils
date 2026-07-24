@@ -67,7 +67,7 @@ function setBaseVersion(): void {
   run('git', ['config', 'user.name', 'github-actions[bot]']);
   run('git', ['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']);
   run('git', ['add', packageJsonPath]);
-  run('git', ['commit', '-m', `chore(${packagePath}): set release version ${baseVersion} [skip ci]`]);
+  run('git', ['commit', '-m', `chore(${packagePath}): set release version ${baseVersion}`]);
   run('git', ['push']);
 }
 
