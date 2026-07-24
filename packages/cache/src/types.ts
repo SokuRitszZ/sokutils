@@ -1,5 +1,6 @@
 import { z, ZodMiniType } from 'zod/v4-mini';
-import { NormalFunction } from '../types';
+
+export type NormalFunction<Params extends any[] = any[], Result = any> = (...args: Params) => Result;
 
 export interface CacheCoreOptions<F extends NormalFunction, Context, AsyncLoad extends boolean> {
   Function: F;
