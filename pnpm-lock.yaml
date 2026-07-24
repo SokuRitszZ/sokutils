@@ -74,6 +74,9 @@ importers:
       '@sokutils/react':
         specifier: workspace:*
         version: link:../../packages/react
+      '@sokutils/react-component-kit':
+        specifier: workspace:*
+        version: link:../../packages/react-component-kit
       '@sokutils/shadcn-ui':
         specifier: workspace:*
         version: link:../../infra/shadcn-ui
@@ -238,6 +241,31 @@ importers:
         version: 3.2.4(@types/node@24.6.2)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1)
 
   packages/react:
+    dependencies:
+      es-toolkit:
+        specifier: 'catalog:'
+        version: 1.49.0
+      goober:
+        specifier: ^2.1.19
+        version: 2.1.19(csstype@3.1.3)
+      react:
+        specifier: '>=18'
+        version: 19.2.0
+      react-dom:
+        specifier: '>=18'
+        version: 19.2.0(react@19.2.0)
+      tailwind-merge:
+        specifier: ^3.3.1
+        version: 3.3.1
+    devDependencies:
+      '@types/react':
+        specifier: '>=18'
+        version: 19.2.0
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.2
+
+  packages/react-component-kit:
     dependencies:
       es-toolkit:
         specifier: 'catalog:'
