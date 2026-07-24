@@ -1,5 +1,5 @@
-import { FC, PropsWithChildren } from 'react';
-import { divx } from '../div';
+import { rck } from '../rck/tag';
+
 
 type SplitSymbol = ' ' | '\n' | '\t' | '-' | '+';
 
@@ -21,8 +21,8 @@ type CamelCase<S extends string, Flag extends boolean = false> =
 type KebabCaseToCamelCase<S extends string> = Capitalize<CamelCase<S>>;
 
 export type LayoutFormat<S extends string> = Exclude<Split<S, ''>, ''>;
-type ComponentProps = PropsWithChildren<{ className?: string }>;
-export type Layout<S extends string> = ReturnType<typeof divx> & Record<KebabCaseToCamelCase<LayoutFormat<S>>, FC<ComponentProps>>;
+type LayoutComponent = ReturnType<typeof rck.div>;
+export type Layout<S extends string> = LayoutComponent & Record<KebabCaseToCamelCase<LayoutFormat<S>>, LayoutComponent>;
 
 type Example = `
 header  -       -
