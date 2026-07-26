@@ -1,0 +1,31 @@
+{
+  "name": "terminal",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test:dev": "vitest",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "@soku-conf/eslint-config": "^1.1.2",
+    "@tsconfig/node20": "^20.1.6",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "es-toolkit": "catalog:",
+    "@sokutils/api-kit": "workspace:",
+    "@sokutils/cache": "workspace:"
+  }
+}
