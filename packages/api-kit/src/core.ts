@@ -1,10 +1,10 @@
-import { compact, merge, toPairs } from 'es-toolkit/compat';
-import { ApiKitConfig } from './types';
+import { cloneDeep, compact, merge, toPairs } from 'es-toolkit/compat';
+import { z } from 'zod/v4-mini';
+import { ApiKitConfig, TApiKit } from './types';
 
-export const ApiKit = (originConfig?: ApiKitConfig) => {
-
+export const ApiKit = <ResponseType = any>(originConfig: ApiKitConfig<ResponseType> = {}): TApiKit<ResponseType> => {
   return {
-    config: (configResolver: (config?: ApiKitConfig) => ApiKitConfig) => {
+    config: (configResolver) => {
       return ApiKit(configResolver(originConfig));
     },
     fetch: async () => {
@@ -12,15 +12,17 @@ export const ApiKit = (originConfig?: ApiKitConfig) => {
       const withQueryUrl = compact([finalUrl, new URLSearchParams(toPairs(originConfig?.Query)).toString()]).join('?');
       const headers = await originConfig?.GetHeaders?.();
 
-      console.log(headers, withQueryUrl);
+      originConfig?.Debug?.(headers, withQueryUrl);
 
       return fetch(withQueryUrl, {
         method: originConfig?.Method,
         body: originConfig?.Body,
         headers,
-      }).then(r => {
+      }).then(async r => {
         const handler = originConfig?.ResponseResolver || ((r) => r.json());
-        return handler(r);
+        const result = await handler(r);
+        const zod = originConfig.ResponseZod || z.any();
+        return zod.parse(result);
       }).then(r => {
         originConfig?.ResponseHandlers?.map(handler => handler(r));
         return r;
