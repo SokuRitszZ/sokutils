@@ -1,7 +1,7 @@
 {
   "name": "@sokutils/api-kit",
   "version": "0.0.0",
-  "description": "Api kit",
+  "description": "Composable typed Fetch API client with Zod response validation",
   "type": "module",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
@@ -18,9 +18,11 @@
     "test": "vitest run"
   },
   "keywords": [
-    "cache",
-    "memoization",
-    "lru",
+    "api",
+    "fetch",
+    "http",
+    "client",
+    "zod",
     "typescript"
   ],
   "author": "",
