@@ -1,0 +1,42 @@
+{
+  "name": "@sokutils/api-kit",
+  "version": "0.0.0",
+  "description": "Api kit",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test:dev": "vitest",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "cache",
+    "memoization",
+    "lru",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "dependencies": {
+    "es-toolkit": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "^3.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SokuRitszZ/sokutils.git",
+    "directory": "packages/api-kit"
+  }
+}
