@@ -23,8 +23,9 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "es-toolkit": "catalog:",
     "@sokutils/api-kit": "workspace:",
-    "@sokutils/cache": "workspace:"
+    "@sokutils/cache": "workspace:",
+    "es-toolkit": "catalog:",
+    "zod": "catalog:"
   }
 }
