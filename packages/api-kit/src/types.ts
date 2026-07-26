@@ -26,7 +26,7 @@ export interface ApiKitConfig<ResponseType = any> {
   Debug?: (...messages: any[]) => void;
 }
 
-export type ApiKitConfigPerFetch = Omit<ApiKitConfig<any>, 'ResponseZod'>
+export type ApiKitConfigPerFetch = Omit<ApiKitConfig<any>, 'ResponseZod'>;
 
 export type ApiKitResponseHandler<ResponseType> = (response: ResponseType) => void
 export type ApiKitErrorHandler = (error: Error) => void
