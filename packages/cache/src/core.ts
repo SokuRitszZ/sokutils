@@ -47,19 +47,22 @@ export const CacheCore =
       }
       options.Storage?.Save(context, valuesMap as Record<string, FinalType>);
     };
-    if (strategyResult.Hit) {
+    if (strategyResult.Hit && valuesMap[key]) {
       defer();
       return valuesMap[key] as ReturnType<F>;
     }
     else {
       const result = options.Function(...params);
       if (result instanceof Promise) {
-        result.then(r => valuesMap[key] = r);
+        result.then(r => {
+          valuesMap[key] = r;
+          defer();
+        });
       }
       else {
         valuesMap[key] = result;
+        defer();
       }
-      defer();
       return result;
     }
   };

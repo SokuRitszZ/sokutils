@@ -1,4 +1,5 @@
 import { ZodMiniType } from 'zod/v4-mini';
+import { debounce } from 'es-toolkit/compat';
 import { CacheDefineStorage } from '../../define';
 import { unwrap } from '../../utils';
 import { CACHE_STORAGE_FORMAT_ZOD } from '../../consts';
@@ -10,7 +11,10 @@ interface CachePresetStorageLocalStorageOptions {
   LocalStorageLike: Storage;
 }
 
+
 export const CachePresetStorageLocalStorage = CacheDefineStorage((options: CachePresetStorageLocalStorageOptions) => {
+  const debounceSave = debounce((key: string, value: string) => options.LocalStorageLike.setItem(key, value), 500);
+
   return {
     AsyncLoad: false,
     ValueValidationZod: options.ValueValidationZod,
@@ -26,7 +30,7 @@ export const CachePresetStorageLocalStorage = CacheDefineStorage((options: Cache
         Context: context,
         CachedValueMap: cachedValueMap,
       }));
-      options.LocalStorageLike.setItem(options.Key, stringified || '');
+      debounceSave(options.Key, stringified || '');
     },
   };
 });
