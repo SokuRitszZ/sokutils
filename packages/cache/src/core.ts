@@ -53,9 +53,14 @@ export const CacheCore =
     }
     else {
       const result = options.Function(...params);
-      valuesMap[key] = result;
+      if (result instanceof Promise) {
+        result.then(r => valuesMap[key] = r);
+      }
+      else {
+        valuesMap[key] = result;
+      }
       defer();
-      return result as ReturnType<F>;
+      return result;
     }
   };
 
