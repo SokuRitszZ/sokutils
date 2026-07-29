@@ -192,6 +192,21 @@ const cached = CacheBuild()
 
 Context schema 必须匹配所选 Strategy。上例 once 的 context 是 `Record<string, boolean>`。Value schema 描述单个缓存值，而不是整个 values map。
 
+LocalStorage 默认以 500ms debounce 同步写入。如果希望减少运行中写入，可以改为仅在浏览器 `beforeunload` 时同步，并通过 `WindowLike` 注入浏览器窗口对象：
+
+```ts
+CachePresetStorageLocalStorage({
+  Key: 'user-name-cache',
+  LocalStorageLike: window.localStorage,
+  ContextValidationZod: z.record(z.string(), z.boolean()),
+  ValueValidationZod: z.string(),
+  SyncMode: 'before-unload',
+  WindowLike: window,
+});
+```
+
+不要在包内部直接依赖 `window`。浏览器外或测试环境继续通过 `LocalStorageLike`、`WindowLike` 注入兼容对象；不传 `WindowLike` 时，Node 等非浏览器环境仍可创建 storage，但 `before-unload` 模式不会自动 flush。
+
 LocalStorage 无法可靠序列化 Promise、函数、循环引用或复杂 class 实例，只持久化 JSON-safe 值。
 
 ## 使用 IndexedDB
