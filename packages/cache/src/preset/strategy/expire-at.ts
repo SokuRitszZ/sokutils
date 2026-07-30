@@ -1,3 +1,4 @@
+import { z } from 'zod/v4-mini';
 import { CacheDefineStrategy } from '../../define';
 
 export const CachePresetStrategyExpireAt = CacheDefineStrategy((expireAt: number) => {
@@ -20,5 +21,6 @@ export const CachePresetStrategyExpireAt = CacheDefineStrategy((expireAt: number
         },
       };
     },
+    ContextValidationZod: z.record(z.string(), z.boolean()),
   };
 });

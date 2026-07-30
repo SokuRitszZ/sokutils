@@ -70,12 +70,34 @@ describe('[CacheCore]', () => {
       Storage: CachePresetStorageLocalStorage({
         Key: 'core.test.ts',
         LocalStorageLike: storageLike,
-        ContextValidationZod: z.record(z.string(), z.boolean()),
         ValueValidationZod: z.string(),
       }),
     });
 
     expect(cached('cached', 1)).toBe('from-storage');
+  });
+
+  it('uses the strategy schema to validate loaded context', () => {
+    const storageLike = new MemoryStorage();
+    storageLike.setItem('core-context.test.ts', JSON.stringify({
+      Context: [],
+      CachedValueMap: {
+        [JSON.stringify(['cached'])]: 'from-storage',
+      },
+    }));
+
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: (key: string) => `${key}:computed`,
+      Storage: CachePresetStorageLocalStorage({
+        Key: 'core-context.test.ts',
+        LocalStorageLike: storageLike,
+        ValueValidationZod: z.string(),
+      }),
+    });
+
+    expect(cached('cached')).toBe('cached:computed');
   });
 
   it('falls back when storage load result is invalid', () => {
@@ -98,7 +120,6 @@ describe('[CacheCore]', () => {
       Storage: CachePresetStorageLocalStorage({
         Key: 'core-invalid.test.ts',
         LocalStorageLike: storageLike,
-        ContextValidationZod: z.record(z.string(), z.boolean()),
         ValueValidationZod: z.string(),
       }),
     });

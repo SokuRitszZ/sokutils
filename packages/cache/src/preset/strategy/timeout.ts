@@ -1,3 +1,4 @@
+import { z } from 'zod/v4-mini';
 import { CacheDefineStrategy } from '../../define';
 
 export const CachePresetStrategyTimeout = CacheDefineStrategy((timeout: number) => {
@@ -19,5 +20,6 @@ export const CachePresetStrategyTimeout = CacheDefineStrategy((timeout: number) 
         PickedKeys: Object.keys(nextContext),
       };
     },
+    ContextValidationZod: z.record(z.string(), z.number()),
   };
 });

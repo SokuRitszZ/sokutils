@@ -22,14 +22,12 @@ const IDBFactoryLike = {} as IDBFactory;
 const SyncStorage = CachePresetStorageLocalStorage({
   Key: 'index.test.ts',
   LocalStorageLike: StorageLike,
-  ContextValidationZod: z.record(z.string(), z.boolean()),
   ValueValidationZod: z.string(),
 });
 
 const AsyncStorage = CachePresetStorageIDB({
   Key: 'index.test.ts',
   IDBFactory: IDBFactoryLike,
-  ContextValidationZod: z.record(z.string(), z.boolean()),
   ValueValidationZod: z.string(),
 });
 

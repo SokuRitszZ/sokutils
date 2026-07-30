@@ -1,3 +1,4 @@
+import { z } from 'zod/v4-mini';
 import { CacheDefineStrategy } from '../../define';
 
 export const CachePresetStrategyOnce = CacheDefineStrategy(() => {
@@ -12,5 +13,6 @@ export const CachePresetStrategyOnce = CacheDefineStrategy(() => {
         },
       };
     },
+    ContextValidationZod: z.record(z.string(), z.boolean()),
   };
 });

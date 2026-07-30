@@ -30,6 +30,7 @@ Core 负责：
 Strategy 负责：
 
 - `InitContext`：生成全新的初始 context。
+- 提供 `ContextValidationZod` 校验持久化载入的 context。
 - `Match`：根据 Key、Params 和 CurrentContext 判断是否 hit。
 - 返回完整 NextContext。
 - 通过 PickedKeys 明确通知 core 应保留哪些缓存值。
@@ -37,7 +38,7 @@ Strategy 负责：
 Storage 负责：
 
 - 声明 `AsyncLoad`，该字面量决定包装函数的返回类型。
-- 提供 ContextValidationZod 与 ValueValidationZod。
+- 提供 `ValueValidationZod` 校验单个缓存值。
 - Load/Save `{ Context, CachedValueMap }`，不解释 strategy 语义。
 
 Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Storage，最终 Build 时调用 CacheCore。每次配置调用都会返回新的 builder 快照，因此已配置的 builder 可以作为模板复用；每次 Build 都会创建独立的 CacheCore 运行时状态。
@@ -73,14 +74,14 @@ Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Sto
 
 ## 内置 Storage 语义
 
-- `local-storage`：同步 Load；要求显式传入 Storage-like 对象；使用 JSON 序列化。
-- `idb`：异步 Load；默认使用 globalThis.indexedDB，也支持注入 IDBFactory；数据库名与 object store 名由实现固定，Key 区分缓存记录。
+- `local-storage`：同步 Load；要求显式传入 Storage-like 对象；使用 JSON 序列化；默认 debounce 保存，也支持 before-unload。
+- `idb`：异步 Load；默认使用 globalThis.indexedDB，也支持注入 IDBFactory；数据库名与 object store 名由实现固定，Key 区分缓存记录；默认 debounce 保存，也支持 best-effort before-unload。
 - 两种 storage 遇到缺失、无法解析或不符合格式的 payload 时都返回 undefined，core 回退到新状态。
-- Core 还会分别用 ContextValidationZod 与 ValueValidationZod 校验载入内容。
+- Core 会使用 Strategy 的 ContextValidationZod 与 Storage 的 ValueValidationZod 校验载入内容。
 
 ## 扩展约束
 
-1. 新 Strategy 使用 `CacheDefineStrategy`，将专用 Context、options 类型维护在自己的文件中。
+1. 新 Strategy 使用 `CacheDefineStrategy`，提供匹配 Context 类型的 ContextValidationZod，并将专用 Context、options 类型维护在自己的文件中。
 2. Match 不要直接修改 CurrentContext；返回新的 NextContext。
 3. 淘汰值时同时返回与 NextContext 一致的 PickedKeys。
 4. 新 Storage 使用 `CacheDefineStorage`，AsyncLoad 必须是 `true` 或 `false` 字面量。

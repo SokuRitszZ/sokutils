@@ -12,7 +12,6 @@ const cached = CacheBuild()
   .Storage(CachePresetStorageLocalStorage({
     Key: 'lab:pure:cache:builder',
     LocalStorageLike: localStorage,
-    ContextValidationZod: z.record(z.string(), z.boolean()),
     ValueValidationZod: z.string(),
   }))
   .Build();

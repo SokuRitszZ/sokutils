@@ -24,7 +24,7 @@ export const CacheCore =
       fallbackInit();
       return;
     }
-    const contextValidation = options.Storage?.ContextValidationZod.safeParse(result.Context);
+    const contextValidation = options.Strategy.ContextValidationZod.safeParse(result.Context);
     const valuesMapValidation = z.record(z.string(), options.Storage.ValueValidationZod).safeParse(result.CachedValueMap);
     context = contextValidation.data ?? options.Strategy.InitContext();
     valuesMap = valuesMapValidation.data ?? {};

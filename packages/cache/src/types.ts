@@ -1,4 +1,4 @@
-import { z, ZodMiniType } from 'zod/v4-mini';
+import { ZodMiniType } from 'zod/v4-mini';
 
 export type NormalFunction<Params extends any[] = any[], Result = any> = (...args: Params) => Result;
 
@@ -23,10 +23,10 @@ export type CacheFinalFunction<F extends NormalFunction, AsyncLoad extends boole
 export type CacheStrategy<Context> = {
   InitContext: () => Context;
   Match: (params: CacheStrategyMatchParams<Context>) => CacheStrategyMatchResult<Context>;
+  ContextValidationZod: ZodMiniType<Context>;
 }
 
 export type CacheStorage<AsyncLoad extends boolean> = {
-  ContextValidationZod: ZodMiniType<any>;
   ValueValidationZod: ZodMiniType<any>;
   AsyncLoad: AsyncLoad;
   Load: AsyncLoad extends false ? () => CacheStorageLoadResult | undefined : () => Promise<CacheStorageLoadResult | undefined>;

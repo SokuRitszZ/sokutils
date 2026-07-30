@@ -1,13 +1,23 @@
 import { ZodMiniType } from 'zod/v4-mini';
-import { debounce } from 'es-toolkit';
-import { CacheDefineStorage } from '../../define';
-import { CACHE_STORAGE_FORMAT_ZOD } from '../../consts';
+import { CACHE_STORAGE_FORMAT_ZOD } from '../../../consts';
+import { CacheDefineStorage } from '../../../define';
+import {
+  type CachePresetStorageIDBSyncMode,
+  type CachePresetStorageIDBWindowLike,
+  createCachePresetStorageIDBSave,
+} from './save';
+
+export type {
+  CachePresetStorageIDBSyncMode,
+  CachePresetStorageIDBWindowLike,
+} from './save';
 
 interface CachePresetStorageIDBOptions {
-  ContextValidationZod: ZodMiniType<any>;
   ValueValidationZod: ZodMiniType<any>;
   Key: string;
   IDBFactory?: IDBFactory;
+  SyncMode?: CachePresetStorageIDBSyncMode;
+  WindowLike?: CachePresetStorageIDBWindowLike;
 }
 
 const CONST_DATABASE_NAME = '@sokutils/pure';
@@ -16,12 +26,6 @@ const CONST_TABLE_NAME = 'cache/preset/storage/idb';
 const waitRequest = <T>(request: IDBRequest<T>) => new Promise<T>((resolve, reject) => {
   request.onsuccess = () => resolve(request.result);
   request.onerror = () => reject(request.error);
-});
-
-const waitTransaction = (transaction: IDBTransaction) => new Promise<void>((resolve, reject) => {
-  transaction.oncomplete = () => resolve();
-  transaction.onerror = () => reject(transaction.error);
-  transaction.onabort = () => reject(transaction.error);
 });
 
 export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetStorageIDBOptions) => {
@@ -36,8 +40,7 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
   };
 
   const openDatabase = async () => {
-    const idb = getIDBFactory();
-    const request = idb.open(CONST_DATABASE_NAME);
+    const request = getIDBFactory().open(CONST_DATABASE_NAME);
 
     request.onupgradeneeded = () => {
       const database = request.result;
@@ -55,7 +58,7 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
     const nextVersion = database.version + 1;
     database.close();
 
-    const upgradeRequest = idb.open(CONST_DATABASE_NAME, nextVersion);
+    const upgradeRequest = getIDBFactory().open(CONST_DATABASE_NAME, nextVersion);
     upgradeRequest.onupgradeneeded = () => {
       upgradeRequest.result.createObjectStore(CONST_TABLE_NAME);
     };
@@ -66,7 +69,6 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
   return {
     AsyncLoad: true,
     ValueValidationZod: options.ValueValidationZod,
-    ContextValidationZod: options.ContextValidationZod,
     Load: async () => {
       const database = await openDatabase();
       const transaction = database.transaction(CONST_TABLE_NAME, 'readonly');
@@ -75,17 +77,12 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
       database.close();
       return CACHE_STORAGE_FORMAT_ZOD.safeParse(rawValue).data;
     },
-    Save: debounce(async (context, cachedValueMap) => {
-      const database = await openDatabase();
-      const transaction = database.transaction(CONST_TABLE_NAME, 'readwrite');
-
-      transaction.objectStore(CONST_TABLE_NAME).put({
-        Context: context,
-        CachedValueMap: cachedValueMap,
-      }, options.Key);
-
-      await waitTransaction(transaction);
-      database.close();
-    }, 1000),
+    Save: createCachePresetStorageIDBSave({
+      Key: options.Key,
+      ObjectStoreName: CONST_TABLE_NAME,
+      OpenDatabase: openDatabase,
+      SyncMode: options.SyncMode,
+      WindowLike: options.WindowLike,
+    }),
   };
 });

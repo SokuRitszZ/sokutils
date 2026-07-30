@@ -1,3 +1,4 @@
+import { z } from 'zod/v4-mini';
 import { CacheDefineStrategy } from '../../define';
 
 export const CachePresetStrategyLRU = CacheDefineStrategy((cap: number) => {
@@ -11,5 +12,6 @@ export const CachePresetStrategyLRU = CacheDefineStrategy((cap: number) => {
         PickedKeys: nextKeys,
       };
     },
+    ContextValidationZod: z.array(z.string()),
   };
 });

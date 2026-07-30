@@ -1,9 +1,25 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { IDBFactory as FakeIDBFactory } from 'fake-indexeddb';
 import { z } from 'zod/v4-mini';
-import { CachePresetStorageIDB } from './idb';
+import { CachePresetStorageIDB } from './index';
+
+class WindowLike {
+  private listeners = new Map<string, (() => void)[]>();
+
+  addEventListener(type: 'beforeunload', listener: () => void) {
+    this.listeners.set(type, [...this.listeners.get(type) ?? [], listener]);
+  }
+
+  dispatch(type: 'beforeunload') {
+    this.listeners.get(type)?.forEach(listener => listener());
+  }
+}
 
 describe('[CachePresetStorageIDB]', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   const putRawValue = async (idb: IDBFactory, key: string, value: unknown) => {
     const openRequest = idb.open('@sokutils/pure');
     openRequest.onupgradeneeded = () => {
@@ -29,14 +45,15 @@ describe('[CachePresetStorageIDB]', () => {
   };
 
   it('loads and saves cache payloads with an injected IDBFactory', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     const storage = CachePresetStorageIDB({
       Key: 'idb.test.ts',
       IDBFactory: new FakeIDBFactory() as unknown as IDBFactory,
-      ContextValidationZod: z.record(z.string(), z.boolean()),
       ValueValidationZod: z.string(),
     });
 
     await storage.Save({ a: true }, { a: 'value' });
+    await vi.advanceTimersByTimeAsync(1000);
 
     await expect(storage.Load()).resolves.toEqual({
       Context: { a: true },
@@ -49,7 +66,6 @@ describe('[CachePresetStorageIDB]', () => {
     const storage = CachePresetStorageIDB({
       Key: 'idb-invalid.test.ts',
       IDBFactory: idb,
-      ContextValidationZod: z.record(z.string(), z.boolean()),
       ValueValidationZod: z.string(),
     });
 
@@ -63,11 +79,34 @@ describe('[CachePresetStorageIDB]', () => {
     await expect(storage.Load()).resolves.toBeUndefined();
   });
 
+  it('saves only on beforeunload in before-unload sync mode', async () => {
+    const windowLike = new WindowLike();
+    const storage = CachePresetStorageIDB({
+      Key: 'idb-before-unload.test.ts',
+      IDBFactory: new FakeIDBFactory() as unknown as IDBFactory,
+      ValueValidationZod: z.string(),
+      SyncMode: 'before-unload',
+      WindowLike: windowLike,
+    });
+
+    storage.Save({ a: true }, { a: 'value' });
+    await expect(storage.Load()).resolves.toBeUndefined();
+
+    storage.Save({ b: false }, { b: 'next' });
+    windowLike.dispatch('beforeunload');
+
+    await vi.waitFor(async () => {
+      await expect(storage.Load()).resolves.toEqual({
+        Context: { b: false },
+        CachedValueMap: { b: 'next' },
+      });
+    });
+  });
+
   it('has async load type', () => {
     const storage = CachePresetStorageIDB({
       Key: 'idb.test.ts',
       IDBFactory: new FakeIDBFactory() as unknown as IDBFactory,
-      ContextValidationZod: z.record(z.string(), z.boolean()),
       ValueValidationZod: z.string(),
     });
 
