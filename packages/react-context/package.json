@@ -1,6 +1,6 @@
 {
   "name": "@sokutils/react-context",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Typed React context factories for props, state models, and hooks",
   "main": "index.js",
   "type": "module",
@@ -28,7 +28,8 @@
     "react": ">=18"
   },
   "dependencies": {
-    "es-toolkit": "catalog:"
+    "es-toolkit": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/react": ">=18",
