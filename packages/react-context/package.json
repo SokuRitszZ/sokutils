@@ -28,7 +28,8 @@
     "react": ">=18"
   },
   "dependencies": {
-    "es-toolkit": "catalog:"
+    "es-toolkit": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/react": ">=18",
