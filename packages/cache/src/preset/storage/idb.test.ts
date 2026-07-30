@@ -1,9 +1,13 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { IDBFactory as FakeIDBFactory } from 'fake-indexeddb';
 import { z } from 'zod/v4-mini';
 import { CachePresetStorageIDB } from './idb';
 
 describe('[CachePresetStorageIDB]', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   const putRawValue = async (idb: IDBFactory, key: string, value: unknown) => {
     const openRequest = idb.open('@sokutils/pure');
     openRequest.onupgradeneeded = () => {
@@ -29,14 +33,15 @@ describe('[CachePresetStorageIDB]', () => {
   };
 
   it('loads and saves cache payloads with an injected IDBFactory', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     const storage = CachePresetStorageIDB({
       Key: 'idb.test.ts',
       IDBFactory: new FakeIDBFactory() as unknown as IDBFactory,
-      ContextValidationZod: z.record(z.string(), z.boolean()),
       ValueValidationZod: z.string(),
     });
 
     await storage.Save({ a: true }, { a: 'value' });
+    await vi.advanceTimersByTimeAsync(1000);
 
     await expect(storage.Load()).resolves.toEqual({
       Context: { a: true },
@@ -49,7 +54,6 @@ describe('[CachePresetStorageIDB]', () => {
     const storage = CachePresetStorageIDB({
       Key: 'idb-invalid.test.ts',
       IDBFactory: idb,
-      ContextValidationZod: z.record(z.string(), z.boolean()),
       ValueValidationZod: z.string(),
     });
 
@@ -67,7 +71,6 @@ describe('[CachePresetStorageIDB]', () => {
     const storage = CachePresetStorageIDB({
       Key: 'idb.test.ts',
       IDBFactory: new FakeIDBFactory() as unknown as IDBFactory,
-      ContextValidationZod: z.record(z.string(), z.boolean()),
       ValueValidationZod: z.string(),
     });
 

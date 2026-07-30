@@ -49,7 +49,6 @@ const createStorage = (options?: {
 }) => CachePresetStorageLocalStorage({
   Key: 'local-storage.test.ts',
   LocalStorageLike: options?.storageLike ?? new MemoryStorage(),
-  ContextValidationZod: z.record(z.string(), z.boolean()),
   ValueValidationZod: z.string(),
   SyncMode: options?.syncMode,
   WindowLike: options?.windowLike,

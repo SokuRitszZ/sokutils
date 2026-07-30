@@ -168,7 +168,7 @@ const cached = CacheBuild()
 
 ## 使用 Local Storage
 
-LocalStorage preset 是同步 Storage，需要显式传入 Storage-like 对象和 Zod schema：
+LocalStorage preset 是同步 Storage，需要显式传入 Storage-like 对象和缓存值的 Zod schema：
 
 ```ts
 import { z } from 'zod/v4-mini';
@@ -184,13 +184,12 @@ const cached = CacheBuild()
   .Storage(CachePresetStorageLocalStorage({
     Key: 'user-name-cache',
     LocalStorageLike: window.localStorage,
-    ContextValidationZod: z.record(z.string(), z.boolean()),
     ValueValidationZod: z.string(),
   }))
   .Build();
 ```
 
-Context schema 必须匹配所选 Strategy。上例 once 的 context 是 `Record<string, boolean>`。Value schema 描述单个缓存值，而不是整个 values map。
+Context schema 由所选 Strategy 提供。Storage 的 Value schema 描述单个缓存值，而不是整个 values map。
 
 LocalStorage 默认以 500ms debounce 同步写入。如果希望减少运行中写入，可以改为仅在浏览器 `beforeunload` 时同步，并通过 `WindowLike` 注入浏览器窗口对象：
 
@@ -198,7 +197,6 @@ LocalStorage 默认以 500ms debounce 同步写入。如果希望减少运行中
 CachePresetStorageLocalStorage({
   Key: 'user-name-cache',
   LocalStorageLike: window.localStorage,
-  ContextValidationZod: z.record(z.string(), z.boolean()),
   ValueValidationZod: z.string(),
   SyncMode: 'before-unload',
   WindowLike: window,
@@ -226,7 +224,6 @@ const cached = CacheBuild()
   .Strategy(CachePresetStrategyLRU(100))
   .Storage(CachePresetStorageIDB({
     Key: 'user-name-cache',
-    ContextValidationZod: z.array(z.string()),
     ValueValidationZod: z.string(),
   }))
   .Build();
@@ -248,6 +245,7 @@ import {
   CacheBuild,
   CacheDefineStrategy,
 } from '@sokutils/cache';
+import { z } from 'zod/v4-mini';
 
 interface UseCountContext {
   [key: string]: number;
@@ -255,6 +253,7 @@ interface UseCountContext {
 
 const CacheStrategyHitTwice = CacheDefineStrategy(() => ({
   InitContext: (): UseCountContext => ({}),
+  ContextValidationZod: z.record(z.string(), z.number()),
   Match: ({ CurrentContext, Key }) => {
     const count = CurrentContext[Key] ?? 0;
     return {
@@ -298,7 +297,6 @@ const CacheStorageMemory = CacheDefineStorage((key: string) => {
 
   return {
     AsyncLoad: false,
-    ContextValidationZod: z.record(z.string(), z.boolean()),
     ValueValidationZod: z.string(),
     Load: () => snapshot as any,
     Save: (Context, CachedValueMap) => {
@@ -312,7 +310,7 @@ const CacheStorageMemory = CacheDefineStorage((key: string) => {
 
 - AsyncLoad 使用布尔字面量，不能是运行时不确定的 boolean。
 - Load 返回 `undefined` 或 `{ Context, CachedValueMap }`。
-- Context schema 与 Strategy context 一致。
+- Context 由 Strategy 的 ContextValidationZod 校验。
 - Value schema描述单个缓存值。
 - 不依赖 Save 会被 await。
 - 外部数据始终视为不可信，并通过 schema 校验。
@@ -340,7 +338,7 @@ const cached = CacheBuild()
 ## 常见错误
 
 - Function 参数是对象却直接依赖默认 JSON key，没有确认稳定性。
-- Strategy context schema 与 Storage 的 ContextValidationZod 不匹配。
+- 自定义 Strategy 缺少与 context 类型匹配的 ContextValidationZod。
 - ValueValidationZod 错写成整个 map 的 schema。
 - Strategy 淘汰了 context key，却没有通过 PickedKeys 淘汰 valuesMap。
 - 使用 async Storage 后仍把 cached function 当同步函数调用。

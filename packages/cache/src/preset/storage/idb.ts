@@ -4,7 +4,6 @@ import { CacheDefineStorage } from '../../define';
 import { CACHE_STORAGE_FORMAT_ZOD } from '../../consts';
 
 interface CachePresetStorageIDBOptions {
-  ContextValidationZod: ZodMiniType<any>;
   ValueValidationZod: ZodMiniType<any>;
   Key: string;
   IDBFactory?: IDBFactory;
@@ -66,7 +65,6 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
   return {
     AsyncLoad: true,
     ValueValidationZod: options.ValueValidationZod,
-    ContextValidationZod: options.ContextValidationZod,
     Load: async () => {
       const database = await openDatabase();
       const transaction = database.transaction(CONST_TABLE_NAME, 'readonly');

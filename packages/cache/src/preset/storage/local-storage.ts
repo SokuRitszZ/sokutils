@@ -11,7 +11,6 @@ export interface CachePresetStorageLocalStorageWindowLike {
 }
 
 interface CachePresetStorageLocalStorageOptions {
-  ContextValidationZod: ZodMiniType<any>;
   ValueValidationZod: ZodMiniType<any>;
   Key: string;
   LocalStorageLike: Storage;
@@ -57,7 +56,6 @@ export const CachePresetStorageLocalStorage = CacheDefineStorage((options: Cache
   return {
     AsyncLoad: false,
     ValueValidationZod: options.ValueValidationZod,
-    ContextValidationZod: options.ContextValidationZod,
     Load: () => {
       const rawValue = options.LocalStorageLike.getItem(options.Key) || '';
       const rawParsedValue = unwrap(() => JSON.parse(rawValue));

@@ -38,7 +38,6 @@ describe('[CacheBuild]', () => {
       .Storage(CachePresetStorageIDB({
         Key: 'builder.test.ts',
         IDBFactory: new FakeIDBFactory(),
-        ContextValidationZod: z.record(z.string(), z.boolean()),
         ValueValidationZod: z.string(),
       }))
       .Build();
