@@ -1,4 +1,5 @@
 import { ZodMiniType } from 'zod/v4-mini';
+import { debounce } from 'es-toolkit';
 import { CacheDefineStorage } from '../../define';
 import { CACHE_STORAGE_FORMAT_ZOD } from '../../consts';
 
@@ -74,7 +75,7 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
       database.close();
       return CACHE_STORAGE_FORMAT_ZOD.safeParse(rawValue).data;
     },
-    Save: async (context, cachedValueMap) => {
+    Save: debounce(async (context, cachedValueMap) => {
       const database = await openDatabase();
       const transaction = database.transaction(CONST_TABLE_NAME, 'readwrite');
 
@@ -85,6 +86,6 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
 
       await waitTransaction(transaction);
       database.close();
-    },
+    }, 1000),
   };
 });
