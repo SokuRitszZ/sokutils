@@ -6,6 +6,8 @@ export * from './hooks';
 export * from './model';
 export * from './props';
 export type * from './types';
+export * from './define';
+export * from './preset';
 
 export const ctx = {
   props: createPropsCtx,
