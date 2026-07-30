@@ -74,8 +74,8 @@ Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Sto
 
 ## 内置 Storage 语义
 
-- `local-storage`：同步 Load；要求显式传入 Storage-like 对象；使用 JSON 序列化。
-- `idb`：异步 Load；默认使用 globalThis.indexedDB，也支持注入 IDBFactory；数据库名与 object store 名由实现固定，Key 区分缓存记录。
+- `local-storage`：同步 Load；要求显式传入 Storage-like 对象；使用 JSON 序列化；默认 debounce 保存，也支持 before-unload。
+- `idb`：异步 Load；默认使用 globalThis.indexedDB，也支持注入 IDBFactory；数据库名与 object store 名由实现固定，Key 区分缓存记录；默认 debounce 保存，也支持 best-effort before-unload。
 - 两种 storage 遇到缺失、无法解析或不符合格式的 payload 时都返回 undefined，core 回退到新状态。
 - Core 会使用 Strategy 的 ContextValidationZod 与 Storage 的 ValueValidationZod 校验载入内容。
 

@@ -231,6 +231,19 @@ const cached = CacheBuild()
 const value = await cached('user-1');
 ```
 
+IDB 默认以 1000ms debounce 写入。也可以和 LocalStorage 一样，仅在 `beforeunload` 时提交最后一份待保存数据：
+
+```ts
+CachePresetStorageIDB({
+  Key: 'user-name-cache',
+  ValueValidationZod: z.string(),
+  SyncMode: 'before-unload',
+  WindowLike: window,
+});
+```
+
+不传 `WindowLike` 时会尝试使用浏览器全局对象；在 Node 等非浏览器环境中不会自动 flush。由于 IndexedDB 写入是异步事务，浏览器不会保证在页面卸载前等待事务完成，因此 `before-unload` 模式只适合 best-effort 持久化，不能作为强一致保存机制。
+
 浏览器外使用时，通过 IDBFactory 注入兼容实现。Storage.Save 不会被 CacheCore await；需要“保存完成后才能继续”的强一致持久化时，当前 API 不满足要求。
 
 为兼容从 `@sokutils/pure` 迁移前已经持久化的数据，IDB preset 继续使用
