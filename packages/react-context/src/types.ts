@@ -18,5 +18,6 @@ export interface CreateModelCtxSync<M> {
 
 export interface CreateModelCtxSyncState{
   Load: () => any | undefined;
+  Dispose: () => void;
   Save: (value?: any) => void;
 }
