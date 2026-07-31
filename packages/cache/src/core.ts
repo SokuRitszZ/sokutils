@@ -1,5 +1,6 @@
 import { once, pick } from 'es-toolkit';
 import { z } from 'zod/v4-mini';
+import { keys, unset } from 'es-toolkit/compat';
 import { CacheCoreOptions, CacheFinalFunction, CacheStorageLoadResult, NormalFunction } from './types';
 
 export const CacheCore =
@@ -43,7 +44,13 @@ export const CacheCore =
     const defer = () => {
       context = strategyResult.NextContext;
       if (strategyResult.PickedKeys) {
-        valuesMap = pick(valuesMap, strategyResult.PickedKeys);
+        const valuesMapKeys = keys(valuesMap);
+        valuesMapKeys.map(k => {
+          if (strategyResult.PickedKeys?.includes(k)) {
+            return;
+          }
+          delete valuesMap[k];
+        });
       }
       options.Storage?.Save(context, valuesMap as Record<string, FinalType>);
     };
