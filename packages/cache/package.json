@@ -1,6 +1,6 @@
 {
   "name": "@sokutils/cache",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Typed function result caching with configurable strategies and storage",
   "type": "module",
   "types": "dist/index.d.ts",
