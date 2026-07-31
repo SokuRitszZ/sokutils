@@ -5,12 +5,11 @@ export const CachePresetStrategyOnce = CacheDefineStrategy(() => {
   return {
     InitContext: () => ({}) as Record<string, boolean>,
     Match: (params) => {
+      const hit = !!params.CurrentContext[params.Key];
+      params.CurrentContext[params.Key] = true;
       return {
-        Hit: !!params.CurrentContext[params.Key],
-        NextContext: {
-          ...params.CurrentContext,
-          [params.Key]: true,
-        },
+        Hit: hit,
+        NextContext: params.CurrentContext,
       };
     },
     ContextValidationZod: z.record(z.string(), z.boolean()),
