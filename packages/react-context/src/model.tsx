@@ -25,6 +25,11 @@ export const createModelCtx = <M, >(propsInitialModel: SoftRequired<M>, sync?: C
       useEffect(() => {
         sync?.State.Save(sync.Zod.safeParse(stateValue).data);
       }, [stateValue]);
+      useEffect(() => {
+        return () => {
+          sync?.State.Dispose();
+        };
+      }, []);
 
       return (
         <Context.Provider value={anemicModel as Anemic<M>}>

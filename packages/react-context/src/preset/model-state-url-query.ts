@@ -23,5 +23,9 @@ export const CreateModelCtxPresetSyncStateUrl = DefineCreateModelCtxSyncState((o
       }
       catch { }
     },
+    Dispose: () => {
+      const url = new URL(location.href);
+      url.searchParams.delete(options.Key);
+    },
   };
 });
