@@ -100,6 +100,74 @@ const cached = CacheCore({
 
 CacheCore 与 CacheBuild 都会保持原 Function 的参数类型。只有配置 AsyncLoad=true 的 Storage 时，同步 Function 才会被提升为返回 Promise 的函数。
 
+## Storage 加载时机
+
+Storage 默认是懒加载的：`Storage.Load` 会在 cached function 第一次调用、第一次 `CleanCache` 或第一次 `CleanAllCache` 时触发，并且只触发一次。
+
+如果希望提前预热持久化缓存，可以让 Storage 返回 `Lazy: false`。这会在 `CacheCore` 创建 wrapper 时立即启动 `Storage.Load`：
+
+```ts
+const cached = CacheBuild()
+  .Function((id: string) => loadName(id))
+  .Storage(CachePresetStorageIDB({
+    Key: 'user-name-cache',
+    ValueValidationZod: z.string(),
+    Lazy: false,
+  }))
+  .Build();
+```
+
+这个选项的意图是把 IndexedDB、远端 storage 这类“首次读取可能有明显延迟”的初始化尽量提前到业务调用之前。比如在模块初始化、页面进入前或组件创建时先 Build，后续真正调用 cached function 时，就有机会复用已经完成的 Load 结果。
+
+需要注意：
+
+- `Lazy: false` 不会改变类型。只要 Storage 的 `AsyncLoad=true`，cached function 仍然返回 Promise。
+- `Lazy: false` 不会 await 异步 Load；它只是提前启动 Load。首次调用如果发生在 Load 完成前，仍然会等待同一个 Load Promise。
+- `Storage.Load` 仍然只执行一次。`Lazy: false` 只是把这一次从“第一次使用时”提前到“创建 wrapper 时”。
+- 同步 Storage 如果在 eager Load 期间抛错，错误会发生在创建 wrapper 阶段；异步 Storage 的 rejection 会被后续首次调用复用。
+
+## 清除缓存
+
+`CacheCore` 和 `CacheBuild().Build()` 返回的 cached function 会额外挂载两个工具方法：
+
+- `CleanCache(...params)`：按同一个 KeyGenerator 生成 key，删除这组参数对应的缓存值和正在执行的异步请求记录。
+- `CleanAllCache()`：删除当前 wrapper 实例里的全部缓存值和正在执行的异步请求记录。
+
+```ts
+const getUser = CacheBuild()
+  .Function((id: string) => loadUser(id))
+  .Build();
+
+const userA = getUser('user-1');
+const cachedUserA = getUser('user-1');
+
+getUser.CleanCache('user-1');
+
+const refreshedUserA = getUser('user-1');
+
+getUser.CleanAllCache();
+```
+
+工具方法使用当前 cached function 的 `KeyGenerator`，所以自定义 key 时也要用原函数参数调用：
+
+```ts
+const getUser = CacheBuild()
+  .Function((user: { id: string; locale: string }) => loadUser(user))
+  .KeyGenerator(user => user.id)
+  .Build();
+
+getUser.CleanCache({ id: 'user-1', locale: 'zh-CN' });
+```
+
+需要注意：
+
+- 清除的是 `valuesMap` 中的缓存值和 `promiseMap` 中的 in-flight 记录，不会重置 Strategy context。
+- 如果配置了 Storage，清除后会触发一次 `Storage.Save`，把删除后的 values map 写回持久化层。
+- `Storage.Save` 仍然不会被 await；对于 debounce / before-unload storage，持久化删除也是按对应 storage 的同步策略执行。
+- 如果清除后 Strategy 仍然返回 hit，但该 key 的缓存值已经不存在，下一次调用会重新执行原 Function。
+- 清除不会取消已经发出去的异步请求；只是让该请求完成后不再写回缓存。已经拿到旧 Promise 的调用方仍会收到它自己的结果。
+- 异步 Storage 首次载入仍然是异步的；清除工具本身返回 `void`，不会等待载入或保存完成。
+
 ## 选择 Strategy
 
 | 需求 | Strategy |
@@ -242,6 +310,18 @@ CachePresetStorageIDB({
 });
 ```
 
+如果 IDB 缓存会影响首屏调用，可以设置 `Lazy: false` 提前启动读取：
+
+```ts
+CachePresetStorageIDB({
+  Key: 'user-name-cache',
+  ValueValidationZod: z.string(),
+  Lazy: false,
+});
+```
+
+这不会让 IDB 读取变快，也不会绕过浏览器对 IndexedDB 的异步调度；它只是把读取时机前移，减少真正调用 cached function 时才开始 open DB / read transaction 的概率。
+
 不传 `WindowLike` 时会尝试使用浏览器全局对象；在 Node 等非浏览器环境中不会自动 flush。由于 IndexedDB 写入是异步事务，浏览器不会保证在页面卸载前等待事务完成，因此 `before-unload` 模式只适合 best-effort 持久化，不能作为强一致保存机制。
 
 浏览器外使用时，通过 IDBFactory 注入兼容实现。Storage.Save 不会被 CacheCore await；需要“保存完成后才能继续”的强一致持久化时，当前 API 不满足要求。
@@ -325,12 +405,13 @@ const CacheStorageMemory = CacheDefineStorage((key: string) => {
 - Load 返回 `undefined` 或 `{ Context, CachedValueMap }`。
 - Context 由 Strategy 的 ContextValidationZod 校验。
 - Value schema描述单个缓存值。
+- `Lazy` 默认等价于 `true`；需要 eager load 时显式返回 `Lazy: false`。
 - 不依赖 Save 会被 await。
 - 外部数据始终视为不可信，并通过 schema 校验。
 
 ## 异步函数与并发
 
-CacheCore 当前缓存 async Function 返回的 Promise，而不是等待 Promise 成功后再写入：
+CacheCore 使用内部的 `promiseMap` 记录正在执行的异步请求：
 
 ```ts
 const cached = CacheBuild()
@@ -338,15 +419,18 @@ const cached = CacheBuild()
   .Build();
 ```
 
-需要注意：
+它的意图是把“并发中的 Promise”和“可持久化的缓存值”分开：
 
-- 第一个 Promise pending 时，后续同 key 调用通常会复用该 Promise。
-- Core 没有独立的 single-flight registry；是否复用 pending Promise 取决于 strategy 是否对后续调用返回 hit。
-- 自定义 strategy 如果在 pending 期间持续返回 miss，会重复执行 Function。
-- Promise rejection 不会自动清除缓存，后续调用可能继续得到同一个 rejected Promise。
-- 不要把 pending Promise 持久化到 JSON Storage。
+- `promiseMap` 只保存 pending Promise，用于同一个 key 的并发去重。
+- `valuesMap` 只保存 resolved value，用于后续命中和 Storage 持久化。
+- 第一个 Promise pending 时，后续同 key 调用会复用同一个 Promise，即使 Strategy 在 pending 期间还没有来得及提交 NextContext。
+- Promise resolve 后，结果写入 `valuesMap`，并从 `promiseMap` 移除。
+- Promise reject 后，只移除 `promiseMap` 记录，不写入 `valuesMap`；下一次调用可以重新执行原 Function。
+- `CleanCache(...params)` 和 `CleanAllCache()` 会删除对应的 `promiseMap` 记录，旧请求完成后不会再写回缓存。
 
-需要自动清除 rejection、single-flight 或 stale-while-revalidate 时，应先扩展 core 并补充并发测试，不要假设当前 API 已支持。
+`promiseMap` 不是第二份缓存，也不会进入 Storage。它解决的是 async function 在同 key pending 阶段的重复请求问题，同时避免把 Promise 写入 localStorage、IndexedDB 等 JSON-like 存储。
+
+需要注意：清理 in-flight 记录不会取消底层请求。如果调用方已经拿到了旧 Promise，它仍会按原请求 resolve 或 reject；只是这个结果不会再污染当前缓存。
 
 ## 常见错误
 
@@ -356,5 +440,6 @@ const cached = CacheBuild()
 - Strategy 淘汰了 context key，却没有通过 PickedKeys 淘汰 valuesMap。
 - 使用 async Storage 后仍把 cached function 当同步函数调用。
 - 假设 Storage.Save 已完成或错误会传播给调用者。
+- 以为 `CleanCache` 会重置 strategy context；它只删除缓存值和 in-flight 记录，并触发 storage 保存。
 - 假设 timeout 会在 hit 时续期。
 - 假设 expire-at 过期后会自动开启新周期。
