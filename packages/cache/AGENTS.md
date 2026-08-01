@@ -8,6 +8,7 @@
 
 - `context`：由 Strategy 独占解释的调度/命中状态。
 - `valuesMap`：`cache key -> function result`。
+- `promiseMap`：`cache key -> pending Promise`，只用于 async Function 的并发去重。
 - 可选 Storage：持久化 `{ Context, CachedValueMap }`。
 
 每次调用流程：
@@ -15,9 +16,19 @@
 1. 首次调用通过 `once` 执行 Storage.Load；没有 Storage 或载入失败时初始化空状态。
 2. KeyGenerator 根据函数参数生成 key。
 3. Strategy.Match 返回 `Hit`、`NextContext` 和可选 `PickedKeys`。
-4. Hit 时直接读取 valuesMap；miss 时调用原 Function 并写入 valuesMap。
-5. 更新 context；若存在 PickedKeys，则只保留这些 key 对应的缓存值。
-6. 调用 Storage.Save 保存最新状态。
+4. Hit 且 valuesMap 有值时直接读取 valuesMap。
+5. miss 时，如果 promiseMap 已有同 key pending Promise，直接复用该 Promise。
+6. 否则调用原 Function；同步结果立即写入 valuesMap，异步结果先写入 promiseMap，resolve 后再写入 valuesMap。
+7. 更新 context；若存在 PickedKeys，则只保留这些 key 对应的缓存值。
+8. 调用 Storage.Save 保存最新状态。
+
+清除缓存工具流程：
+
+- `CleanCache(...params)` 使用同一个 KeyGenerator 生成 key，删除对应 valuesMap 项和 promiseMap 项。
+- `CleanAllCache()` 删除全部 valuesMap 项和 promiseMap 项。
+- 两者都会确保首次 Storage.Load 已执行；配置 Storage 时，删除后调用 Storage.Save 保存当前 context 和 valuesMap。
+- 两者不重置 Strategy context，也不等待异步 Storage 的载入或保存完成。
+- 两者不会取消已经发出的异步请求；旧 Promise settle 后不得再写回已清除的缓存。
 
 ## 职责边界
 
@@ -52,10 +63,11 @@ Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Sto
 - Storage.Load 只执行一次。AsyncLoad=true 时，首次和后续调用都会返回 Promise 类型。
 - Storage.Save 的返回值不会被 await；当前持久化是 fire-and-forget。
 - 多个 Build 默认拥有独立的内存 context 和 valuesMap；如果复用同一个 Storage 实例，它们仍会读写相同的持久化 Key，可能互相覆盖。
-- CacheCore 没有独立的 in-flight/single-flight registry。默认 once 等 strategy 通常会复用已写入 valuesMap 的 pending Promise，但自定义 strategy 若持续返回 miss，仍会重复执行 Function。
-- async Function 返回的 Promise 会立即进入 valuesMap。Rejected Promise 不会自动移除，可能被后续 hit 重用。
+- promiseMap 是 in-flight/single-flight registry，不是第二份缓存。它只保存 pending Promise，不参与 Storage.Save。
+- async Function resolve 后才写入 valuesMap；reject 后只清除 promiseMap，不写入 valuesMap。
+- 同 key pending 复用不会提交第二次 Strategy.Match 的 NextContext；context 以发起实际 Function 调用的那次 miss 为准。
 - Function 同步抛错时不会更新 value、context 或 Storage。
-- 当前没有公开的 delete、clear、invalidate 或 stale-while-revalidate API。
+- 公开的清理 API 只有 `CleanCache` 和 `CleanAllCache`；当前没有 stale-while-revalidate API。
 
 ## 内置 Strategy 语义
 
