@@ -97,6 +97,7 @@ export const CacheCore =
     const loadResult = initStorage();
 
     if (loadResult instanceof Promise) {
+
       loadResult.then(clean);
     }
     else {
