@@ -100,6 +100,47 @@ const cached = CacheCore({
 
 CacheCore 与 CacheBuild 都会保持原 Function 的参数类型。只有配置 AsyncLoad=true 的 Storage 时，同步 Function 才会被提升为返回 Promise 的函数。
 
+## 清除缓存
+
+`CacheCore` 和 `CacheBuild().Build()` 返回的 cached function 会额外挂载两个工具方法：
+
+- `CleanCache(...params)`：按同一个 KeyGenerator 生成 key，只删除这组参数对应的缓存值。
+- `CleanAllCache()`：删除当前 wrapper 实例里的全部缓存值。
+
+```ts
+const getUser = CacheBuild()
+  .Function((id: string) => loadUser(id))
+  .Build();
+
+const userA = getUser('user-1');
+const cachedUserA = getUser('user-1');
+
+getUser.CleanCache('user-1');
+
+const refreshedUserA = getUser('user-1');
+
+getUser.CleanAllCache();
+```
+
+工具方法使用当前 cached function 的 `KeyGenerator`，所以自定义 key 时也要用原函数参数调用：
+
+```ts
+const getUser = CacheBuild()
+  .Function((user: { id: string; locale: string }) => loadUser(user))
+  .KeyGenerator(user => user.id)
+  .Build();
+
+getUser.CleanCache({ id: 'user-1', locale: 'zh-CN' });
+```
+
+需要注意：
+
+- 清除的是 `valuesMap` 中的缓存值，不会重置 Strategy context。
+- 如果配置了 Storage，清除后会触发一次 `Storage.Save`，把删除后的 values map 写回持久化层。
+- `Storage.Save` 仍然不会被 await；对于 debounce / before-unload storage，持久化删除也是按对应 storage 的同步策略执行。
+- 如果清除后 Strategy 仍然返回 hit，但该 key 的缓存值已经不存在，下一次调用会重新执行原 Function。
+- 异步 Storage 首次载入仍然是异步的；清除工具本身返回 `void`，不会等待载入或保存完成。
+
 ## 选择 Strategy
 
 | 需求 | Strategy |
@@ -345,6 +386,7 @@ const cached = CacheBuild()
 - 自定义 strategy 如果在 pending 期间持续返回 miss，会重复执行 Function。
 - Promise rejection 不会自动清除缓存，后续调用可能继续得到同一个 rejected Promise。
 - 不要把 pending Promise 持久化到 JSON Storage。
+- 如需在 rejected Promise 后重新执行，可以在 catch 分支里调用 `cached.CleanCache(...params)`。
 
 需要自动清除 rejection、single-flight 或 stale-while-revalidate 时，应先扩展 core 并补充并发测试，不要假设当前 API 已支持。
 
@@ -356,5 +398,6 @@ const cached = CacheBuild()
 - Strategy 淘汰了 context key，却没有通过 PickedKeys 淘汰 valuesMap。
 - 使用 async Storage 后仍把 cached function 当同步函数调用。
 - 假设 Storage.Save 已完成或错误会传播给调用者。
+- 以为 `CleanCache` 会重置 strategy context；它只删除缓存值，并触发 storage 保存。
 - 假设 timeout 会在 hit 时续期。
 - 假设 expire-at 过期后会自动开启新周期。

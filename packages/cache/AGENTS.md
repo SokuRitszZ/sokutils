@@ -19,6 +19,13 @@
 5. 更新 context；若存在 PickedKeys，则只保留这些 key 对应的缓存值。
 6. 调用 Storage.Save 保存最新状态。
 
+清除缓存工具流程：
+
+- `CleanCache(...params)` 使用同一个 KeyGenerator 生成 key，只删除对应 valuesMap 项。
+- `CleanAllCache()` 删除全部 valuesMap 项。
+- 两者都会确保首次 Storage.Load 已执行；配置 Storage 时，删除后调用 Storage.Save 保存当前 context 和 valuesMap。
+- 两者不重置 Strategy context，也不等待异步 Storage 的载入或保存完成。
+
 ## 职责边界
 
 Core 负责：
@@ -55,7 +62,7 @@ Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Sto
 - CacheCore 没有独立的 in-flight/single-flight registry。默认 once 等 strategy 通常会复用已写入 valuesMap 的 pending Promise，但自定义 strategy 若持续返回 miss，仍会重复执行 Function。
 - async Function 返回的 Promise 会立即进入 valuesMap。Rejected Promise 不会自动移除，可能被后续 hit 重用。
 - Function 同步抛错时不会更新 value、context 或 Storage。
-- 当前没有公开的 delete、clear、invalidate 或 stale-while-revalidate API。
+- 公开的清理 API 只有 `CleanCache` 和 `CleanAllCache`；当前没有 stale-while-revalidate API。
 
 ## 内置 Strategy 语义
 
