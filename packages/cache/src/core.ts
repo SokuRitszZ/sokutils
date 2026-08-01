@@ -1,12 +1,12 @@
-import { once, pick } from 'es-toolkit';
+import { once } from 'es-toolkit';
 import { z } from 'zod/v4-mini';
-import { keys, unset } from 'es-toolkit/compat';
-import { CacheCoreOptions, CacheFinalFunction, CacheStorageLoadResult, NormalFunction } from './types';
+import { keys } from 'es-toolkit/compat';
+import { CacheCoreOptions, CacheFinalFunction, CacheFinalFunctionTools, CacheStorageLoadResult, NormalFunction } from './types';
 
 export const CacheCore =
   <F extends NormalFunction, Context, AsyncLoad extends boolean = false>
   (options: CacheCoreOptions<F, Context, AsyncLoad>)
-    : CacheFinalFunction<F, AsyncLoad> => {
+    : CacheFinalFunction<F, AsyncLoad> & CacheFinalFunctionTools<F> => {
   type FinalType = Awaited<ReturnType<F>>;
   type FnParameters = Parameters<F>;
   type FinalFunction = CacheFinalFunction<F, AsyncLoad>;
@@ -37,6 +37,9 @@ export const CacheCore =
     const initResult = options.Storage?.Load();
     return initResult instanceof Promise ? initResult.then(loadStorageResultSync) : loadStorageResultSync(initResult);
   });
+  const saveStorage = () => {
+    options.Storage?.Save(context, valuesMap as Record<string, FinalType>);
+  };
 
   const getAndHandleResult = (...params: FnParameters): ReturnType<F> => {
     const key = options.KeyGenerator(...params);
@@ -52,7 +55,7 @@ export const CacheCore =
           delete valuesMap[k];
         });
       }
-      options.Storage?.Save(context, valuesMap as Record<string, FinalType>);
+      saveStorage();
     };
     if (strategyResult.Hit && valuesMap[key]) {
       defer();
@@ -75,6 +78,7 @@ export const CacheCore =
   };
 
   const wrappedFn = (...params: FnParameters) => {
+
     const loadResult = initStorage();
     if (loadResult instanceof Promise) {
       return loadResult.then(() => getAndHandleResult(...params));
@@ -84,5 +88,41 @@ export const CacheCore =
     }
   };
 
-  return wrappedFn as FinalFunction;
+  const CleanCache = (...args: FnParameters) => {
+    const key = options.KeyGenerator(...args);
+    const clean = () => {
+      delete valuesMap[key];
+      saveStorage();
+    };
+    const loadResult = initStorage();
+
+    if (loadResult instanceof Promise) {
+      loadResult.then(clean);
+    }
+    else {
+      clean();
+    }
+  };
+
+  const CleanAllCache = () => {
+    const clean = () => {
+      keys(valuesMap).map(k => {
+        delete valuesMap[k];
+      });
+      saveStorage();
+    };
+    const loadResult = initStorage();
+
+    if (loadResult instanceof Promise) {
+      loadResult.then(clean);
+    }
+    else {
+      clean();
+    }
+  };
+
+  wrappedFn.CleanCache = CleanCache;
+  wrappedFn.CleanAllCache = CleanAllCache;
+
+  return wrappedFn as any as (FinalFunction & CacheFinalFunctionTools<F>);
   };

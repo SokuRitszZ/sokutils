@@ -14,11 +14,16 @@ export type CacheBuilder<F extends NormalFunction, Context, AsyncLoad extends bo
   Storage: <NextAsyncLoad extends boolean>(storage: CacheStorage<NextAsyncLoad>) => CacheBuilder<F, Context, NextAsyncLoad>;
   Function: <NextF extends NormalFunction>(fn: NextF) => CacheBuilder<NextF, Context, AsyncLoad>;
   KeyGenerator: (keyFn: CacheKeyGenerator<F>) => CacheBuilder<F, Context, AsyncLoad>;
-  Build: () => CacheFinalFunction<F, AsyncLoad>;
+  Build: () => CacheFinalFunction<F, AsyncLoad> & CacheFinalFunctionTools<F>;
 }
 
 export type CacheFinalFunction<F extends NormalFunction, AsyncLoad extends boolean> =
   AsyncLoad extends true ? (...params: Parameters<F>) => Promise<Awaited<ReturnType<F>>> : F;
+
+export type CacheFinalFunctionTools<F extends NormalFunction> = {
+  CleanCache: (...params: Parameters<F>) => void;
+  CleanAllCache: () => void;
+}
 
 export type CacheStrategy<Context> = {
   InitContext: () => Context;
