@@ -14,6 +14,7 @@ export const CacheCore =
 
   let context: Context;
   let valuesMap: Partial<Record<string, FinalType>>;
+  const promiseMap: Partial<Record<string, Promise<FinalType>>> = {};
 
   const fallbackInit = () => {
     context = options.Strategy.InitContext();
@@ -61,12 +62,24 @@ export const CacheCore =
       defer();
       return valuesMap[key] as ReturnType<F>;
     }
+    else if (promiseMap[key]) {
+      return promiseMap[key] as ReturnType<F>;
+    }
     else {
       const result = options.Function(...params);
       if (result instanceof Promise) {
+        promiseMap[key] = result;
         result.then(r => {
+          if (promiseMap[key] !== result) {
+            return;
+          }
+          delete promiseMap[key];
           valuesMap[key] = r;
           defer();
+        }, () => {
+          if (promiseMap[key] === result) {
+            delete promiseMap[key];
+          }
         });
       }
       else {
@@ -78,7 +91,6 @@ export const CacheCore =
   };
 
   const wrappedFn = (...params: FnParameters) => {
-
     const loadResult = initStorage();
     if (loadResult instanceof Promise) {
       return loadResult.then(() => getAndHandleResult(...params));
@@ -92,6 +104,7 @@ export const CacheCore =
     const key = options.KeyGenerator(...args);
     const clean = () => {
       delete valuesMap[key];
+      delete promiseMap[key];
       saveStorage();
     };
     const loadResult = initStorage();
@@ -108,6 +121,9 @@ export const CacheCore =
     const clean = () => {
       keys(valuesMap).map(k => {
         delete valuesMap[k];
+      });
+      keys(promiseMap).map(k => {
+        delete promiseMap[k];
       });
       saveStorage();
     };

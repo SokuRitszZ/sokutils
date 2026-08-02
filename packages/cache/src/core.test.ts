@@ -169,6 +169,63 @@ describe('[CacheCore]', () => {
     expect(cached('b')).toBe('b:4');
   });
 
+  it('dedupes in-flight async calls by key', async () => {
+    let callCount = 0;
+    let resolveValue!: (value: string) => void;
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: async (key: string) => {
+        callCount += 1;
+        return new Promise<string>(resolve => {
+          resolveValue = resolve;
+        }).then(value => `${key}:${value}`);
+      },
+    });
+
+    const first = cached('a');
+    const second = cached('a');
+
+    expect(second).toBe(first);
+    expect(callCount).toBe(1);
+
+    resolveValue('resolved');
+
+    await expect(first).resolves.toBe('a:resolved');
+    expect(await cached('a')).toBe('a:resolved');
+    expect(callCount).toBe(1);
+  });
+
+  it('drops in-flight async cache when cleaning by params', async () => {
+    let callCount = 0;
+    const resolveValues: Array<(value: string) => void> = [];
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: async (key: string) => {
+        callCount += 1;
+        return new Promise<string>(resolve => {
+          resolveValues.push(resolve);
+        }).then(value => `${key}:${value}`);
+      },
+    });
+
+    const first = cached('a');
+    cached.CleanCache('a');
+    const second = cached('a');
+
+    expect(second).not.toBe(first);
+    expect(callCount).toBe(2);
+
+    resolveValues[0]('old');
+    resolveValues[1]('new');
+
+    await expect(first).resolves.toBe('a:old');
+    await expect(second).resolves.toBe('a:new');
+    expect(await cached('a')).toBe('a:new');
+    expect(callCount).toBe(2);
+  });
+
   it('can clean before the first cached call', () => {
     const cached = CacheCore({
       KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
