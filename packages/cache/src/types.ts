@@ -36,6 +36,7 @@ export type CacheStorage<AsyncLoad extends boolean> = {
   AsyncLoad: AsyncLoad;
   Load: AsyncLoad extends false ? () => CacheStorageLoadResult | undefined : () => Promise<CacheStorageLoadResult | undefined>;
   Save: (context: any, cachedValueMap: Record<string, any>) => void;
+  Lazy?: boolean;
 }
 
 export type CacheStorageLoadResult<F extends NormalFunction = () => any, Context = any> = {

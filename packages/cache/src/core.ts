@@ -137,6 +137,11 @@ export const CacheCore =
     }
   };
 
+  const isLazy = options.Storage?.Lazy ?? true;
+  if (!isLazy) {
+    initStorage();
+  }
+
   wrappedFn.CleanCache = CleanCache;
   wrappedFn.CleanAllCache = CleanAllCache;
 
