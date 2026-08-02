@@ -8,6 +8,7 @@
 
 - `context`：由 Strategy 独占解释的调度/命中状态。
 - `valuesMap`：`cache key -> function result`。
+- `promiseMap`：`cache key -> pending Promise`，只用于 async Function 的并发去重。
 - 可选 Storage：持久化 `{ Context, CachedValueMap }`。
 
 每次调用流程：
@@ -15,9 +16,19 @@
 1. 首次调用通过 `once` 执行 Storage.Load；没有 Storage 或载入失败时初始化空状态。
 2. KeyGenerator 根据函数参数生成 key。
 3. Strategy.Match 返回 `Hit`、`NextContext` 和可选 `PickedKeys`。
-4. Hit 时直接读取 valuesMap；miss 时调用原 Function 并写入 valuesMap。
-5. 更新 context；若存在 PickedKeys，则只保留这些 key 对应的缓存值。
-6. 调用 Storage.Save 保存最新状态。
+4. Hit 且 valuesMap 有值时直接读取 valuesMap。
+5. miss 时，如果 promiseMap 已有同 key pending Promise，直接复用该 Promise。
+6. 否则调用原 Function；同步结果立即写入 valuesMap，异步结果先写入 promiseMap，resolve 后再写入 valuesMap。
+7. 更新 context；若存在 PickedKeys，则只保留这些 key 对应的缓存值。
+8. 调用 Storage.Save 保存最新状态。
+
+清除缓存工具流程：
+
+- `CleanCache(...params)` 使用同一个 KeyGenerator 生成 key，删除对应 valuesMap 项和 promiseMap 项。
+- `CleanAllCache()` 删除全部 valuesMap 项和 promiseMap 项。
+- 两者都会确保首次 Storage.Load 已执行；配置 Storage 时，删除后调用 Storage.Save 保存当前 context 和 valuesMap。
+- 两者不重置 Strategy context，也不等待异步 Storage 的载入或保存完成。
+- 两者不会取消已经发出的异步请求；旧 Promise settle 后不得再写回已清除的缓存。
 
 ## 职责边界
 
@@ -39,6 +50,7 @@ Storage 负责：
 
 - 声明 `AsyncLoad`，该字面量决定包装函数的返回类型。
 - 提供 `ValueValidationZod` 校验单个缓存值。
+- 可选声明 `Lazy` 控制首次 Load 时机；默认懒加载，`Lazy: false` 表示创建 wrapper 时立即启动 Load。
 - Load/Save `{ Context, CachedValueMap }`，不解释 strategy 语义。
 
 Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Storage，最终 Build 时调用 CacheCore。每次配置调用都会返回新的 builder 快照，因此已配置的 builder 可以作为模板复用；每次 Build 都会创建独立的 CacheCore 运行时状态。
@@ -49,13 +61,15 @@ Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Sto
 - PickedKeys 会过滤 valuesMap，但不会自动修改 NextContext。Strategy 必须同时返回一致的 context。
 - InitContext 每次必须返回新对象或新数组，不要共享可变默认值。
 - KeyGenerator 必须稳定且只由参数决定。默认实现是 `JSON.stringify(params)`，复杂对象、循环引用或需要跨进程稳定性时应自定义。
-- Storage.Load 只执行一次。AsyncLoad=true 时，首次和后续调用都会返回 Promise 类型。
+- Storage.Load 只执行一次。Lazy 默认为 true，首次调用 cached function 或清理工具时触发；Lazy=false 时在 CacheCore 创建 wrapper 阶段触发。
+- Lazy=false 只提前启动 Load，不改变 AsyncLoad 推导出的函数返回类型。AsyncLoad=true 时，首次和后续调用都会返回 Promise 类型。
 - Storage.Save 的返回值不会被 await；当前持久化是 fire-and-forget。
 - 多个 Build 默认拥有独立的内存 context 和 valuesMap；如果复用同一个 Storage 实例，它们仍会读写相同的持久化 Key，可能互相覆盖。
-- CacheCore 没有独立的 in-flight/single-flight registry。默认 once 等 strategy 通常会复用已写入 valuesMap 的 pending Promise，但自定义 strategy 若持续返回 miss，仍会重复执行 Function。
-- async Function 返回的 Promise 会立即进入 valuesMap。Rejected Promise 不会自动移除，可能被后续 hit 重用。
+- promiseMap 是 in-flight/single-flight registry，不是第二份缓存。它只保存 pending Promise，不参与 Storage.Save。
+- async Function resolve 后才写入 valuesMap；reject 后只清除 promiseMap，不写入 valuesMap。
+- 同 key pending 复用不会提交第二次 Strategy.Match 的 NextContext；context 以发起实际 Function 调用的那次 miss 为准。
 - Function 同步抛错时不会更新 value、context 或 Storage。
-- 当前没有公开的 delete、clear、invalidate 或 stale-while-revalidate API。
+- 公开的清理 API 只有 `CleanCache` 和 `CleanAllCache`；当前没有 stale-while-revalidate API。
 
 ## 内置 Strategy 语义
 
@@ -75,7 +89,7 @@ Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Sto
 ## 内置 Storage 语义
 
 - `local-storage`：同步 Load；要求显式传入 Storage-like 对象；使用 JSON 序列化；默认 debounce 保存，也支持 before-unload。
-- `idb`：异步 Load；默认使用 globalThis.indexedDB，也支持注入 IDBFactory；数据库名与 object store 名由实现固定，Key 区分缓存记录；默认 debounce 保存，也支持 best-effort before-unload。
+- `idb`：异步 Load；默认使用 globalThis.indexedDB，也支持注入 IDBFactory；数据库名与 object store 名由实现固定，Key 区分缓存记录；支持 Lazy=false 提前启动读取；默认 debounce 保存，也支持 best-effort before-unload。
 - 两种 storage 遇到缺失、无法解析或不符合格式的 payload 时都返回 undefined，core 回退到新状态。
 - Core 会使用 Strategy 的 ContextValidationZod 与 Storage 的 ValueValidationZod 校验载入内容。
 
@@ -85,8 +99,9 @@ Builder 只负责以链式 API 收集 Function、Strategy、KeyGenerator 和 Sto
 2. Match 不要直接修改 CurrentContext；返回新的 NextContext。
 3. 淘汰值时同时返回与 NextContext 一致的 PickedKeys。
 4. 新 Storage 使用 `CacheDefineStorage`，AsyncLoad 必须是 `true` 或 `false` 字面量。
-5. Storage payload 保持 `{ Context, CachedValueMap }`，并使用现有 Zod schema 做外层验证。
-6. 优先使用 `es-toolkit` 和现有 `unwrap` 等工具，不重复实现通用操作。
+5. Lazy 是可选项，只控制 Load 启动时机，不应影响 Load/Save payload 或返回类型。
+6. Storage payload 保持 `{ Context, CachedValueMap }`，并使用现有 Zod schema 做外层验证。
+7. 优先使用 `es-toolkit` 和现有 `unwrap` 等工具，不重复实现通用操作。
 
 ## 测试约束
 

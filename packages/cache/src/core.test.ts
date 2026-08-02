@@ -128,6 +128,157 @@ describe('[CacheCore]', () => {
     expect(cached('cached')).toBe('cached:1');
   });
 
+  it('cleans one cached value by params', () => {
+    let callCount = 0;
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: (key: string) => {
+        callCount += 1;
+        return `${key}:${callCount}`;
+      },
+    });
+
+    expect(cached('a')).toBe('a:1');
+    expect(cached('a')).toBe('a:1');
+    expect(cached('b')).toBe('b:2');
+
+    cached.CleanCache('a');
+
+    expect(cached('a')).toBe('a:3');
+    expect(cached('b')).toBe('b:2');
+  });
+
+  it('cleans all cached values', () => {
+    let callCount = 0;
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: (key: string) => {
+        callCount += 1;
+        return `${key}:${callCount}`;
+      },
+    });
+
+    expect(cached('a')).toBe('a:1');
+    expect(cached('b')).toBe('b:2');
+
+    cached.CleanAllCache();
+
+    expect(cached('a')).toBe('a:3');
+    expect(cached('b')).toBe('b:4');
+  });
+
+  it('dedupes in-flight async calls by key', async () => {
+    let callCount = 0;
+    let resolveValue!: (value: string) => void;
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: async (key: string) => {
+        callCount += 1;
+        return new Promise<string>(resolve => {
+          resolveValue = resolve;
+        }).then(value => `${key}:${value}`);
+      },
+    });
+
+    const first = cached('a');
+    const second = cached('a');
+
+    expect(second).toBe(first);
+    expect(callCount).toBe(1);
+
+    resolveValue('resolved');
+
+    await expect(first).resolves.toBe('a:resolved');
+    expect(await cached('a')).toBe('a:resolved');
+    expect(callCount).toBe(1);
+  });
+
+  it('drops in-flight async cache when cleaning by params', async () => {
+    let callCount = 0;
+    const resolveValues: Array<(value: string) => void> = [];
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: async (key: string) => {
+        callCount += 1;
+        return new Promise<string>(resolve => {
+          resolveValues.push(resolve);
+        }).then(value => `${key}:${value}`);
+      },
+    });
+
+    const first = cached('a');
+    cached.CleanCache('a');
+    const second = cached('a');
+
+    expect(second).not.toBe(first);
+    expect(callCount).toBe(2);
+
+    resolveValues[0]('old');
+    resolveValues[1]('new');
+
+    await expect(first).resolves.toBe('a:old');
+    await expect(second).resolves.toBe('a:new');
+    expect(await cached('a')).toBe('a:new');
+    expect(callCount).toBe(2);
+  });
+
+  it('can clean before the first cached call', () => {
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: (key: string) => `${key}:value`,
+    });
+
+    expect(() => cached.CleanCache('a')).not.toThrow();
+    expect(() => cached.CleanAllCache()).not.toThrow();
+    expect(cached('a')).toBe('a:value');
+  });
+
+  it('saves storage after cleaning cache values', () => {
+    const savedResults: unknown[] = [];
+    const cached = CacheCore({
+      KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
+      Strategy: CACHE_DEFAULT_STRATEGY,
+      Function: (key: string) => `${key}:computed`,
+      Storage: {
+        AsyncLoad: false,
+        ValueValidationZod: z.string(),
+        Load: () => ({
+          Context: {
+            [JSON.stringify(['a'])]: true,
+            [JSON.stringify(['b'])]: true,
+          },
+          CachedValueMap: {
+            [JSON.stringify(['a'])]: 'a:stored',
+            [JSON.stringify(['b'])]: 'b:stored',
+          },
+        }),
+        Save: (context, cachedValueMap) => {
+          savedResults.push({
+            Context: context,
+            CachedValueMap: { ...cachedValueMap },
+          });
+        },
+      },
+    });
+
+    cached.CleanCache('a');
+
+    expect(savedResults.at(-1)).toEqual({
+      Context: {
+        [JSON.stringify(['a'])]: true,
+        [JSON.stringify(['b'])]: true,
+      },
+      CachedValueMap: {
+        [JSON.stringify(['b'])]: 'b:stored',
+      },
+    });
+  });
+
   it('keeps sync and async return types', () => {
     const CachedSyncFn = CacheCore({
       KeyGenerator: CACHE_DEFAULT_KEY_GENERATOR,
@@ -143,5 +294,7 @@ describe('[CacheCore]', () => {
 
     expectTypeOf(CachedSyncFn).toEqualTypeOf<(str: string, num: number) => string>();
     expectTypeOf(CachedAsyncFn).toEqualTypeOf<(str: string, num: number) => Promise<string>>();
+    expectTypeOf(CachedSyncFn.CleanCache).toEqualTypeOf<(str: string, num: number) => void>();
+    expectTypeOf(CachedSyncFn.CleanAllCache).toEqualTypeOf<() => void>();
   });
 });
