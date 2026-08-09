@@ -18,6 +18,7 @@ interface CachePresetStorageIDBOptions {
   IDBFactory?: IDBFactory;
   SyncMode?: CachePresetStorageIDBSyncMode;
   WindowLike?: CachePresetStorageIDBWindowLike;
+  Lazy?: boolean;
 }
 
 const CONST_DATABASE_NAME = '@sokutils/pure';
@@ -84,5 +85,6 @@ export const CachePresetStorageIDB = CacheDefineStorage((options: CachePresetSto
       SyncMode: options.SyncMode,
       WindowLike: options.WindowLike,
     }),
+    Lazy: options.Lazy,
   };
 });

@@ -1,73 +1,63 @@
-import { once, pick } from 'es-toolkit';
-import { z } from 'zod/v4-mini';
-import { keys, unset } from 'es-toolkit/compat';
-import { CacheCoreOptions, CacheFinalFunction, CacheStorageLoadResult, NormalFunction } from './types';
+import { assign, keys } from 'es-toolkit/compat';
+import { CacheCoreOptions, CacheFinalFunction, CacheFinalFunctionTools, NormalFunction } from './types';
+import { CacheCoreBuildState } from './core/build-state';
+import { CacheCoreBuildTools } from './core/build-tools';
+import { CacheCoreLoadStorageCaller } from './core/load-storage';
+import { CacheCoreSaveStorage } from './core/save-storage';
 
 export const CacheCore =
   <F extends NormalFunction, Context, AsyncLoad extends boolean = false>
   (options: CacheCoreOptions<F, Context, AsyncLoad>)
-    : CacheFinalFunction<F, AsyncLoad> => {
-  type FinalType = Awaited<ReturnType<F>>;
-  type FnParameters = Parameters<F>;
+    : CacheFinalFunction<F, AsyncLoad> & CacheFinalFunctionTools<F> => {
   type FinalFunction = CacheFinalFunction<F, AsyncLoad>;
-  type StorageLoadResult = CacheStorageLoadResult<F, Context>;
+  type FnParameters = Parameters<F>;
 
-  let context: Context;
-  let valuesMap: Partial<Record<string, FinalType>>;
-
-  const fallbackInit = () => {
-    context = options.Strategy.InitContext();
-    valuesMap = {};
-  };
-
-  const loadStorage = (result: StorageLoadResult) => {
-    if (!options.Storage) {
-      fallbackInit();
-      return;
-    }
-    const contextValidation = options.Strategy.ContextValidationZod.safeParse(result.Context);
-    const valuesMapValidation = z.record(z.string(), options.Storage.ValueValidationZod).safeParse(result.CachedValueMap);
-    context = contextValidation.data ?? options.Strategy.InitContext();
-    valuesMap = valuesMapValidation.data ?? {};
-  };
-  const loadStorageResultSync = (result: StorageLoadResult | undefined) => {
-    return result ? loadStorage(result) : fallbackInit();
-  };
-  const initStorage = once(() => {
-    const initResult = options.Storage?.Load();
-    return initResult instanceof Promise ? initResult.then(loadStorageResultSync) : loadStorageResultSync(initResult);
-  });
+  const state = CacheCoreBuildState(options);
+  const loadStorage = CacheCoreLoadStorageCaller(options, state);
+  const tools = CacheCoreBuildTools(options, state, loadStorage);
 
   const getAndHandleResult = (...params: FnParameters): ReturnType<F> => {
     const key = options.KeyGenerator(...params);
-    const strategyResult = options.Strategy.Match({ CurrentContext: context, Key: key, Params: params });
+    const strategyResult = options.Strategy.Match({ CurrentContext: state.Context, Key: key, Params: params });
     const defer = () => {
-      context = strategyResult.NextContext;
+      state.Context = strategyResult.NextContext;
       if (strategyResult.PickedKeys) {
-        const valuesMapKeys = keys(valuesMap);
+        const valuesMapKeys = keys(state.ValuesMap);
         valuesMapKeys.map(k => {
           if (strategyResult.PickedKeys?.includes(k)) {
             return;
           }
-          delete valuesMap[k];
+          delete state.ValuesMap[k];
         });
       }
-      options.Storage?.Save(context, valuesMap as Record<string, FinalType>);
+      CacheCoreSaveStorage(options, state);
     };
-    if (strategyResult.Hit && valuesMap[key]) {
+    if (strategyResult.Hit && state.ValuesMap[key]) {
       defer();
-      return valuesMap[key] as ReturnType<F>;
+      return state.ValuesMap[key] as ReturnType<F>;
+    }
+    else if (state.PromiseMap[key]) {
+      return state.PromiseMap[key] as ReturnType<F>;
     }
     else {
       const result = options.Function(...params);
       if (result instanceof Promise) {
+        state.PromiseMap[key] = result;
         result.then(r => {
-          valuesMap[key] = r;
+          if (state.PromiseMap[key] !== result) {
+            return;
+          }
+          delete state.PromiseMap[key];
+          state.ValuesMap[key] = r;
           defer();
+        }, () => {
+          if (state.PromiseMap[key] === result) {
+            delete state.PromiseMap[key];
+          }
         });
       }
       else {
-        valuesMap[key] = result;
+        state.ValuesMap[key] = result;
         defer();
       }
       return result;
@@ -75,7 +65,7 @@ export const CacheCore =
   };
 
   const wrappedFn = (...params: FnParameters) => {
-    const loadResult = initStorage();
+    const loadResult = loadStorage();
     if (loadResult instanceof Promise) {
       return loadResult.then(() => getAndHandleResult(...params));
     }
@@ -84,5 +74,12 @@ export const CacheCore =
     }
   };
 
-  return wrappedFn as FinalFunction;
+  const isLazy = options.Storage?.Lazy ?? true;
+  if (!isLazy) {
+    loadStorage();
+  }
+
+  assign(wrappedFn, tools);
+
+  return wrappedFn as any as (FinalFunction & CacheFinalFunctionTools<F>);
   };

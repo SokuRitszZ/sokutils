@@ -13,6 +13,8 @@ describe('[CacheBuild]', () => {
 
     expect(cached('a')).toBe(cached('a'));
     expect(cached('a')).not.toBe(cached('b'));
+    expectTypeOf(cached.CleanCache).toEqualTypeOf<(key: string) => void>();
+    expectTypeOf(cached.CleanAllCache).toEqualTypeOf<() => void>();
   });
 
   it('applies chained function, strategy, and key generator options', () => {
@@ -29,6 +31,9 @@ describe('[CacheBuild]', () => {
     expect(cached({ id: 'a' })).toBe('a:1');
     expect(cached({ id: 'a' })).toBe('a:1');
     expect(cached({ id: 'b' })).toBe('b:2');
+
+    cached.CleanCache({ id: 'a' });
+
     expect(cached({ id: 'a' })).toBe('a:3');
   });
 
