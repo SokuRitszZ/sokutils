@@ -57,3 +57,9 @@ export type CacheStrategyMatchResult<Context> = {
   NextContext: Context;
   PickedKeys?: string[];
 }
+
+export interface CacheCoreState<Context, FinalType> {
+  Context: Context;
+  ValuesMap: Partial<Record<string, FinalType>>;
+  PromiseMap: Partial<Record<string, Promise<FinalType>>>;
+}
